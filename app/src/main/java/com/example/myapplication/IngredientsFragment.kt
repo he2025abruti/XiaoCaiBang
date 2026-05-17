@@ -12,13 +12,16 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class IngredientsFragment : Fragment() {
 
     private lateinit var calendarView: CalendarView
     private lateinit var addIngredientButton: FloatingActionButton
     private lateinit var dbHelper: IngredientDatabaseHelper
+    private var selectedDate: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,10 +41,8 @@ class IngredientsFragment : Fragment() {
 
         // 设置日历控件的日期选择事件
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            // 处理日期选择事件
-            val date = "$year-${month + 1}-$dayOfMonth"
-            val ingredients = dbHelper.getIngredientsByDate(date)
-            // 显示该日期的食材
+            selectedDate = String.format("%d-%02d-%02d", year, month + 1, dayOfMonth)
+            val ingredients = dbHelper.getIngredientsByDate(selectedDate)
             showIngredientsByDate(ingredients)
         }
 
@@ -61,13 +62,12 @@ class IngredientsFragment : Fragment() {
         unitSpinner.adapter = adapter
 
         AlertDialog.Builder(requireContext())
-            .setTitle("添加食材")
+            .setTitle("添加食材到 $selectedDate")
             .setView(dialogView)
             .setPositiveButton("保存") { _, _ ->
                 val name = ingredientName.text.toString()
                 val quantity = ingredientQuantity.text.toString()
                 val unit = unitSpinner.selectedItem.toString()
-                // 保存食材信息
                 saveIngredient(name, quantity, unit)
             }
             .setNegativeButton("取消", null)
@@ -75,15 +75,10 @@ class IngredientsFragment : Fragment() {
     }
 
     private fun saveIngredient(name: String, quantity: String, unit: String) {
-        // 获取当前日期
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-        val date = dateFormat.format(Date())
-        // 保存到数据库
-        dbHelper.addIngredient(name, quantity, unit, date)
-        // 显示保存成功的提示
+        dbHelper.addIngredient(name, quantity, unit, selectedDate)
         AlertDialog.Builder(requireContext())
             .setTitle("保存成功")
-            .setMessage("食材已添加到今日")
+            .setMessage("食材已添加到 $selectedDate")
             .setPositiveButton("确定", null)
             .show()
     }

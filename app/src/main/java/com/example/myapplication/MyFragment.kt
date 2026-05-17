@@ -21,6 +21,7 @@ class MyFragment : Fragment() {
     private lateinit var username: TextView
     private lateinit var settingsList: ListView
     private lateinit var sharedPreferences: SharedPreferences
+    private var nightModeApplied = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,14 +38,6 @@ class MyFragment : Fragment() {
         // 加载保存的用户名
         val savedUsername = sharedPreferences.getString("username", "用户名")
         username.text = savedUsername
-
-        // 加载保存的主题设置
-        val isNightMode = sharedPreferences.getBoolean("night_mode", false)
-        if (isNightMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
 
         // 设置头像点击事件
         avatar.setOnClickListener {
@@ -66,16 +59,14 @@ class MyFragment : Fragment() {
             when (position) {
                 0 -> {
                     val switch = itemView.findViewById<Switch>(R.id.setting_switch)
-                    switch.isChecked = isNightMode
+                    switch.setOnCheckedChangeListener(null)
+                    switch.isChecked = !switch.isChecked
                     switch.setOnCheckedChangeListener { _, isChecked ->
+                        sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
                         if (isChecked) {
-                            // 切换到夜间模式
                             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                            sharedPreferences.edit().putBoolean("night_mode", true).apply()
                         } else {
-                            // 切换到日间模式
                             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                            sharedPreferences.edit().putBoolean("night_mode", false).apply()
                         }
                     }
                 }
@@ -85,16 +76,26 @@ class MyFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!nightModeApplied) {
+            val isNightMode = sharedPreferences.getBoolean("night_mode", false)
+            AppCompatDelegate.setDefaultNightMode(
+                if (isNightMode) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
+            nightModeApplied = true
+        }
+    }
+
     private fun showChangeAvatarDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("修改头像")
             .setMessage("选择头像来源")
             .setPositiveButton("相机") { _, _ ->
-                // 打开相机
                 println("打开相机")
             }
             .setNegativeButton("相册") { _, _ ->
-                // 打开相册
                 println("打开相册")
             }
             .show()
@@ -111,7 +112,6 @@ class MyFragment : Fragment() {
             .setPositiveButton("保存") { _, _ ->
                 val newUsername = usernameEditText.text.toString()
                 username.text = newUsername
-                // 保存用户名到SharedPreferences
                 sharedPreferences.edit().putString("username", newUsername).apply()
             }
             .setNegativeButton("取消", null)

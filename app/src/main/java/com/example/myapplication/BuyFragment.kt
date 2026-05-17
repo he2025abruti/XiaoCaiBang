@@ -2,14 +2,14 @@ package com.example.myapplication
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.ListView
+import android.widget.SimpleAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import java.text.SimpleDateFormat
@@ -21,12 +21,30 @@ class BuyFragment : Fragment() {
     private lateinit var vegetableList: ListView
     private lateinit var alphabetScroll: ViewGroup
 
-    // 模拟蔬菜水果数据
-    private val vegetables = listOf(
-        "苹果", "香蕉", "橙子", "菠萝", "葡萄",
-        "白菜", "萝卜", "西红柿", "黄瓜", "茄子",
-        "土豆", "洋葱", "胡萝卜", "青椒", "西兰花"
-    )
+    // 蔬菜水果数据（中文名, 拼音首字母）
+    private val allVegetables = listOf(
+        "白菜" to "B", "菠萝" to "B",
+        "橙子" to "C",
+        "大蒜" to "D", "冬瓜" to "D",
+        "番薯" to "F",
+        "甘蔗" to "G",
+        "胡萝卜" to "H", "黄瓜" to "H", "火龙果" to "H",
+        "韭菜" to "J", "橘子" to "J",
+        "苦瓜" to "K",
+        "萝卜" to "L", "蓝莓" to "L", "辣椒" to "L", "梨" to "L", "荔枝" to "L",
+        "芒果" to "M", "猕猴桃" to "M", "蘑菇" to "M", "木耳" to "M",
+        "南瓜" to "N", "柠檬" to "N", "牛肉" to "N",
+        "苹果" to "P", "葡萄" to "P",
+        "芹菜" to "Q", "茄子" to "Q", "青椒" to "Q",
+        "山药" to "S", "生姜" to "S", "丝瓜" to "S",
+        "土豆" to "T", "桃子" to "T", "甜椒" to "T",
+        "莴笋" to "W",
+        "西红柿" to "X", "西兰花" to "X", "香蕉" to "X", "西瓜" to "X", "香菇" to "X",
+        "洋葱" to "Y", "玉米" to "Y", "柚子" to "Y", "芋头" to "Y",
+        "竹笋" to "Z"
+    ).sortedBy { it.second }
+
+    private var filteredVegetables: List<Pair<String, String>> = allVegetables.toList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,26 +57,50 @@ class BuyFragment : Fragment() {
         vegetableList = view.findViewById(R.id.vegetable_list)
         alphabetScroll = view.findViewById(R.id.alphabet_scroll)
 
-        // 设置蔬菜水果列表
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, vegetables)
-        vegetableList.adapter = adapter
+        updateList(filteredVegetables)
+
+        // 搜索框筛选
+        searchBox.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val keyword = s.toString().trim()
+                filteredVegetables = if (keyword.isEmpty()) {
+                    allVegetables.toList()
+                } else {
+                    allVegetables.filter { it.first.contains(keyword) }
+                }
+                updateList(filteredVegetables)
+            }
+        })
 
         // 设置列表项点击事件
         vegetableList.setOnItemClickListener { _, _, position, _ ->
-            showVegetableDetail(vegetables[position])
+            showVegetableDetail(filteredVegetables[position].first)
         }
 
         // 设置字母导航点击事件
         for (i in 0 until alphabetScroll.childCount) {
             val letterView = alphabetScroll.getChildAt(i) as TextView
             letterView.setOnClickListener {
-                // 跳转到对应字母开头的蔬菜水果
                 val letter = letterView.text.toString()
                 scrollToLetter(letter)
             }
         }
 
         return view
+    }
+
+    private fun updateList(vegetables: List<Pair<String, String>>) {
+        val data = vegetables.map { mapOf("name" to it.first, "letter" to it.second) }
+        val adapter = SimpleAdapter(
+            requireContext(),
+            data,
+            android.R.layout.simple_list_item_2,
+            arrayOf("name", "letter"),
+            intArrayOf(android.R.id.text1, android.R.id.text2)
+        )
+        vegetableList.adapter = adapter
     }
 
     private fun showVegetableDetail(vegetable: String) {
@@ -69,7 +111,6 @@ class BuyFragment : Fragment() {
         val tipsTextView = dialogView.findViewById<TextView>(R.id.vegetable_tips)
         val storageTextView = dialogView.findViewById<TextView>(R.id.vegetable_storage)
 
-        // 设置蔬菜水果详情
         nameTextView.text = vegetable
         seasonTextView.text = "季节: 全年"
         priceTextView.text = "价格区间: 东南 3-5元/斤, 西北 4-6元/斤"
@@ -79,7 +120,6 @@ class BuyFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .setPositiveButton("+添加到我的食材") { _, _ ->
-                // 添加到食材
                 addToIngredients(vegetable)
             }
             .setNegativeButton("取消", null)
@@ -87,20 +127,17 @@ class BuyFragment : Fragment() {
     }
 
     private fun scrollToLetter(letter: String) {
-        // 实现跳转到对应字母开头的蔬菜水果
-        // 这里暂时只打印日志
-        println("跳转到字母: $letter")
+        val index = filteredVegetables.indexOfFirst { it.second == letter }
+        if (index >= 0) {
+            vegetableList.setSelection(index)
+        }
     }
 
     private fun addToIngredients(vegetable: String) {
-        // 创建数据库帮助类
         val dbHelper = IngredientDatabaseHelper(requireContext())
-        // 获取当前日期
         val dateFormat = SimpleDateFormat("yyyy-MM-dd")
         val date = dateFormat.format(Date())
-        // 保存到数据库
         dbHelper.addIngredient(vegetable, "1", "斤", date)
-        // 显示添加成功的提示
         AlertDialog.Builder(requireContext())
             .setTitle("添加成功")
             .setMessage("$vegetable 已添加到今日食材")
