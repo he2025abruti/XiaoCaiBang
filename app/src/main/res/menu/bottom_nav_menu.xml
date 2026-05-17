@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_buy"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="买菜" />
+    <item
+        android:id="@+id/nav_ingredients"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="食材" />
+    <item
+        android:id="@+id/nav_my"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="我的" />
+</menu>
