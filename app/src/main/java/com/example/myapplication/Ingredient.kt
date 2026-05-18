@@ -5,5 +5,6 @@ class Ingredient(
     val name: String,
     val quantity: String,
     val unit: String,
-    val date: String
+    val date: String,
+    val expireDate: String = ""
 )

@@ -4,11 +4,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <CalendarView
-        android:id="@+id/calendar_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="80dp" />
+        android:orientation="vertical">
+
+        <CalendarView
+            android:id="@+id/calendar_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3" />
+
+        <TextView
+            android:id="@+id/ingredient_brief"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textSize="13sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:background="?android:attr/selectableItemBackground"
+            android:visibility="gone" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2">
+
+            <ListView
+                android:id="@+id/ingredient_detail_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="?android:attr/listDivider"
+                android:dividerHeight="1dp" />
+
+            <TextView
+                android:id="@+id/empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="暂无食材"
+                android:textSize="16sp"
+                android:textColor="?android:attr/textColorSecondary" />
+
+        </FrameLayout>
+
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_ingredient_button"

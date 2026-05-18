@@ -46,7 +46,8 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(ingredientsFragment)
                     true
                 }
-                R.id.nav_my -> {
+                R.
+                id.nav_my -> {
                     replaceFragment(myFragment)
                     true
                 }

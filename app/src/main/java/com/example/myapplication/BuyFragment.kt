@@ -13,7 +13,9 @@ import android.widget.SimpleAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class BuyFragment : Fragment() {
 
@@ -45,6 +47,29 @@ class BuyFragment : Fragment() {
     ).sortedBy { it.second }
 
     private var filteredVegetables: List<Pair<String, String>> = allVegetables.toList()
+
+    // 各食材默认保鲜天数
+    private val shelfLifeMap = mapOf(
+        "白菜" to 7, "菠萝" to 5,
+        "橙子" to 14,
+        "大蒜" to 30, "冬瓜" to 14,
+        "番薯" to 14,
+        "甘蔗" to 7,
+        "胡萝卜" to 14, "黄瓜" to 5, "火龙果" to 5,
+        "韭菜" to 3, "橘子" to 10,
+        "苦瓜" to 7,
+        "萝卜" to 14, "蓝莓" to 5, "辣椒" to 7, "梨" to 7, "荔枝" to 3,
+        "芒果" to 5, "猕猴桃" to 7, "蘑菇" to 3, "木耳" to 7,
+        "南瓜" to 30, "柠檬" to 14, "牛肉" to 3,
+        "苹果" to 14, "葡萄" to 5,
+        "芹菜" to 5, "茄子" to 7, "青椒" to 7,
+        "山药" to 14, "生姜" to 30, "丝瓜" to 5,
+        "土豆" to 14, "桃子" to 5, "甜椒" to 7,
+        "莴笋" to 5,
+        "西红柿" to 7, "西兰花" to 5, "香蕉" to 5, "西瓜" to 7, "香菇" to 3,
+        "洋葱" to 30, "玉米" to 3, "柚子" to 14, "芋头" to 14,
+        "竹笋" to 5
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -115,7 +140,8 @@ class BuyFragment : Fragment() {
         seasonTextView.text = "季节: 全年"
         priceTextView.text = "价格区间: 东南 3-5元/斤, 西北 4-6元/斤"
         tipsTextView.text = "挑选技巧: 选择外观新鲜，无损伤的"
-        storageTextView.text = "保鲜时间: 3-5天"
+        val shelfDays = shelfLifeMap[vegetable] ?: 7
+        storageTextView.text = "保鲜时间: ${shelfDays}天"
 
         AlertDialog.Builder(requireContext())
             .setView(dialogView)
@@ -135,12 +161,16 @@ class BuyFragment : Fragment() {
 
     private fun addToIngredients(vegetable: String) {
         val dbHelper = IngredientDatabaseHelper(requireContext())
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = dateFormat.format(Date())
-        dbHelper.addIngredient(vegetable, "1", "斤", date)
+        val shelfDays = shelfLifeMap[vegetable] ?: 7
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_MONTH, shelfDays)
+        val expireDate = dateFormat.format(calendar.time)
+        dbHelper.addIngredient(vegetable, "1", "斤", date, expireDate)
         AlertDialog.Builder(requireContext())
             .setTitle("添加成功")
-            .setMessage("$vegetable 已添加到今日食材")
+            .setMessage("$vegetable 已添加到今日食材，保鲜期${shelfDays}天")
             .setPositiveButton("确定", null)
             .show()
     }

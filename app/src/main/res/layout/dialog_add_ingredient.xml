@@ -34,4 +34,27 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="保鲜天数: "
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/shelf_life_days"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="7"
+            android:text="7"
+            android:inputType="number" />
+
+    </LinearLayout>
+
 </LinearLayout>
