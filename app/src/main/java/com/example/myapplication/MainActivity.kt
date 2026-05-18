@@ -3,6 +3,7 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -15,6 +16,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myFragment: MyFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 夜间模式初始化，必须在 super.onCreate() 之前
+        val prefs = getSharedPreferences("user_settings", 0)
+        val isNightMode = prefs.getBoolean("night_mode", false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isNightMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -46,8 +55,7 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(ingredientsFragment)
                     true
                 }
-                R.
-                id.nav_my -> {
+                R.id.nav_my -> {
                     replaceFragment(myFragment)
                     true
                 }

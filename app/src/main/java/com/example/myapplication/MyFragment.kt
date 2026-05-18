@@ -6,13 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.Switch
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 
 class MyFragment : Fragment() {
@@ -21,7 +20,6 @@ class MyFragment : Fragment() {
     private lateinit var username: TextView
     private lateinit var settingsList: ListView
     private lateinit var sharedPreferences: SharedPreferences
-    private var nightModeApplied = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,41 +48,38 @@ class MyFragment : Fragment() {
         }
 
         // 设置设置列表
-        val settings = listOf("主题设置")
-        val adapter = ArrayAdapter(requireContext(), R.layout.settings_item, settings)
-        settingsList.adapter = adapter
-
-        // 设置列表项点击事件
-        settingsList.setOnItemClickListener { _, itemView, position, _ ->
-            when (position) {
-                0 -> {
-                    val switch = itemView.findViewById<Switch>(R.id.setting_switch)
-                    switch.setOnCheckedChangeListener(null)
-                    switch.isChecked = !switch.isChecked
-                    switch.setOnCheckedChangeListener { _, isChecked ->
-                        sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
-                        if (isChecked) {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                        } else {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                        }
-                    }
-                }
-            }
-        }
+        settingsList.adapter = SettingsAdapter()
 
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (!nightModeApplied) {
+    private inner class SettingsAdapter : BaseAdapter() {
+        private val settings = listOf("主题设置")
+
+        override fun getCount(): Int = settings.size
+        override fun getItem(position: Int): String = settings[position]
+        override fun getItemId(position: Int): Long = position.toLong()
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view = convertView ?: LayoutInflater.from(context)
+                .inflate(R.layout.settings_item, parent, false)
+
+            val nameView = view.findViewById<TextView>(R.id.setting_name)
+            val switchView = view.findViewById<Switch>(R.id.setting_switch)
+
+            nameView.text = settings[position]
+
+            // 读取当前夜间模式状态
             val isNightMode = sharedPreferences.getBoolean("night_mode", false)
-            AppCompatDelegate.setDefaultNightMode(
-                if (isNightMode) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-            )
-            nightModeApplied = true
+            switchView.setOnCheckedChangeListener(null)
+            switchView.isChecked = isNightMode
+
+            switchView.setOnCheckedChangeListener { _, isChecked ->
+                sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
+                requireActivity().recreate()
+            }
+
+            return view
         }
     }
 
