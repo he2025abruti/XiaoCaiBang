@@ -2,14 +2,18 @@ package com.example.myapplication
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ListView
-import android.widget.SimpleAdapter
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import java.text.SimpleDateFormat
@@ -22,9 +26,18 @@ class BuyFragment : Fragment() {
     private lateinit var searchBox: EditText
     private lateinit var vegetableList: ListView
     private lateinit var alphabetScroll: ViewGroup
+    private lateinit var loadingProgress: ProgressBar
 
-    // 蔬菜水果数据（中文名, 拼音首字母）
-    private val allVegetables = listOf(
+    private val apiHelper = SpoonacularApiHelper()
+    private val imageLoader = ImageLoader()
+    private val handler = Handler(Looper.getMainLooper())
+
+    // 所有食材数据（API 或本地兜底）
+    private var allFoodItems: List<FoodItem> = emptyList()
+    private var filteredItems: List<FoodItem> = emptyList()
+
+    // 原有硬编码数据（兜底用）
+    private val localVegetables = listOf(
         "白菜" to "B", "菠萝" to "B",
         "橙子" to "C",
         "大蒜" to "D", "冬瓜" to "D",
@@ -46,31 +59,6 @@ class BuyFragment : Fragment() {
         "竹笋" to "Z"
     ).sortedBy { it.second }
 
-    private var filteredVegetables: List<Pair<String, String>> = allVegetables.toList()
-
-    // 各食材默认保鲜天数
-    private val shelfLifeMap = mapOf(
-        "白菜" to 7, "菠萝" to 5,
-        "橙子" to 14,
-        "大蒜" to 30, "冬瓜" to 14,
-        "番薯" to 14,
-        "甘蔗" to 7,
-        "胡萝卜" to 14, "黄瓜" to 5, "火龙果" to 5,
-        "韭菜" to 3, "橘子" to 10,
-        "苦瓜" to 7,
-        "萝卜" to 14, "蓝莓" to 5, "辣椒" to 7, "梨" to 7, "荔枝" to 3,
-        "芒果" to 5, "猕猴桃" to 7, "蘑菇" to 3, "木耳" to 7,
-        "南瓜" to 30, "柠檬" to 14, "牛肉" to 3,
-        "苹果" to 14, "葡萄" to 5,
-        "芹菜" to 5, "茄子" to 7, "青椒" to 7,
-        "山药" to 14, "生姜" to 30, "丝瓜" to 5,
-        "土豆" to 14, "桃子" to 5, "甜椒" to 7,
-        "莴笋" to 5,
-        "西红柿" to 7, "西兰花" to 5, "香蕉" to 5, "西瓜" to 7, "香菇" to 3,
-        "洋葱" to 30, "玉米" to 3, "柚子" to 14, "芋头" to 14,
-        "竹笋" to 5
-    )
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -81,8 +69,15 @@ class BuyFragment : Fragment() {
         searchBox = view.findViewById(R.id.search_box)
         vegetableList = view.findViewById(R.id.vegetable_list)
         alphabetScroll = view.findViewById(R.id.alphabet_scroll)
+        loadingProgress = view.findViewById(R.id.loading_progress)
 
-        updateList(filteredVegetables)
+        // 先用本地数据展示
+        allFoodItems = apiHelper.getLocalFoodItems()
+        filteredItems = allFoodItems.toList()
+        updateList(filteredItems)
+
+        // 异步加载 API 数据
+        loadFromApi()
 
         // 搜索框筛选
         searchBox.addTextChangedListener(object : TextWatcher {
@@ -90,87 +85,170 @@ class BuyFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val keyword = s.toString().trim()
-                filteredVegetables = if (keyword.isEmpty()) {
-                    allVegetables.toList()
+                filteredItems = if (keyword.isEmpty()) {
+                    allFoodItems.toList()
                 } else {
-                    allVegetables.filter { it.first.contains(keyword) }
+                    allFoodItems.filter { it.name.contains(keyword) }
                 }
-                updateList(filteredVegetables)
+                updateList(filteredItems)
             }
         })
 
-        // 设置列表项点击事件
+        // 列表项点击
         vegetableList.setOnItemClickListener { _, _, position, _ ->
-            showVegetableDetail(filteredVegetables[position].first)
+            if (position in filteredItems.indices) {
+                showVegetableDetail(filteredItems[position])
+            }
         }
 
-        // 设置字母导航点击事件
+        // 字母导航点击
         for (i in 0 until alphabetScroll.childCount) {
             val letterView = alphabetScroll.getChildAt(i) as TextView
             letterView.setOnClickListener {
-                val letter = letterView.text.toString()
-                scrollToLetter(letter)
+                scrollToLetter(letterView.text.toString())
             }
         }
 
         return view
     }
 
-    private fun updateList(vegetables: List<Pair<String, String>>) {
-        val data = vegetables.map { mapOf("name" to it.first, "letter" to it.second) }
-        val adapter = SimpleAdapter(
-            requireContext(),
-            data,
-            android.R.layout.simple_list_item_2,
-            arrayOf("name", "letter"),
-            intArrayOf(android.R.id.text1, android.R.id.text2)
-        )
-        vegetableList.adapter = adapter
+    /**
+     * 后台线程从 API 加载数据
+     */
+    private fun loadFromApi() {
+        loadingProgress.visibility = View.VISIBLE
+        Thread {
+            val apiItems = apiHelper.searchAllIngredients()
+            handler.post {
+                loadingProgress.visibility = View.GONE
+                if (apiItems.isNotEmpty()) {
+                    allFoodItems = apiItems
+                    // 保持当前搜索状态
+                    val keyword = searchBox.text.toString().trim()
+                    filteredItems = if (keyword.isEmpty()) {
+                        allFoodItems.toList()
+                    } else {
+                        allFoodItems.filter { it.name.contains(keyword) }
+                    }
+                    updateList(filteredItems)
+                }
+                // API 失败时保持本地数据，不闪退
+            }
+        }.start()
     }
 
-    private fun showVegetableDetail(vegetable: String) {
+    /**
+     * 更新列表（自定义 Adapter，显示圆形图片 + 名称）
+     */
+    private fun updateList(items: List<FoodItem>) {
+        vegetableList.adapter = VegetableAdapter(items)
+    }
+
+    /**
+     * 自定义列表适配器
+     */
+    private inner class VegetableAdapter(private val items: List<FoodItem>) : BaseAdapter() {
+
+        override fun getCount(): Int = items.size
+        override fun getItem(position: Int): FoodItem = items[position]
+        override fun getItemId(position: Int): Long = position.toLong()
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view = convertView ?: LayoutInflater.from(context)
+                .inflate(R.layout.item_vegetable, parent, false)
+
+            val item = items[position]
+            val imageView = view.findViewById<ImageView>(R.id.vegetable_image)
+            val nameView = view.findViewById<TextView>(R.id.vegetable_name)
+            val letterView = view.findViewById<TextView>(R.id.vegetable_letter)
+
+            nameView.text = item.name
+            letterView.text = item.pinyinLetter
+
+            // 加载图片
+            if (item.imageUrl.isNotEmpty()) {
+                imageLoader.loadImage(item.imageUrl, imageView, circular = true)
+            } else {
+                imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+            }
+
+            return view
+        }
+    }
+
+    /**
+     * 显示食材详情
+     */
+    private fun showVegetableDetail(item: FoodItem) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_vegetable_detail, null)
+        val imageView = dialogView.findViewById<ImageView>(R.id.vegetable_image)
         val nameTextView = dialogView.findViewById<TextView>(R.id.vegetable_name)
         val seasonTextView = dialogView.findViewById<TextView>(R.id.vegetable_season)
         val priceTextView = dialogView.findViewById<TextView>(R.id.vegetable_price)
         val tipsTextView = dialogView.findViewById<TextView>(R.id.vegetable_tips)
         val storageTextView = dialogView.findViewById<TextView>(R.id.vegetable_storage)
 
-        nameTextView.text = vegetable
-        seasonTextView.text = "季节: 全年"
-        priceTextView.text = "价格区间: 东南 3-5元/斤, 西北 4-6元/斤"
-        tipsTextView.text = "挑选技巧: 选择外观新鲜，无损伤的"
-        val shelfDays = shelfLifeMap[vegetable] ?: 7
-        storageTextView.text = "保鲜时间: ${shelfDays}天"
+        nameTextView.text = item.name
+        seasonTextView.text = "季节: ${item.season}"
+        priceTextView.text = if (item.price.isNotEmpty()) "参考价格: ${item.price}" else "参考价格: 本地市场价"
+        tipsTextView.text = "挑选技巧: ${item.tips}"
+        storageTextView.text = "保鲜时间: ${item.shelfLifeDays}天"
+
+        // 加载详情图片
+        if (item.imageUrl.isNotEmpty()) {
+            imageLoader.loadImage(item.imageUrl, imageView, circular = false)
+        } else {
+            imageView.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
+
+        // 如果有 API ID，异步加载详细信息
+        if (item.id > 0) {
+            Thread {
+                val detail = apiHelper.getIngredientDetail(item.id)
+                if (detail != null) {
+                    handler.post {
+                        if (detail.price.isNotEmpty()) {
+                            priceTextView.text = "参考价格: ${detail.price}"
+                        }
+                        if (detail.tips.startsWith("分类:")) {
+                            tipsTextView.text = "分类信息: ${detail.tips.removePrefix("分类:")}"
+                        }
+                    }
+                }
+            }.start()
+        }
 
         AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .setPositiveButton("+添加到我的食材") { _, _ ->
-                addToIngredients(vegetable)
+                addToIngredients(item)
             }
             .setNegativeButton("取消", null)
             .show()
     }
 
     private fun scrollToLetter(letter: String) {
-        val index = filteredVegetables.indexOfFirst { it.second == letter }
+        val index = filteredItems.indexOfFirst { it.pinyinLetter == letter }
         if (index >= 0) {
             vegetableList.setSelection(index)
         }
     }
 
-    private fun addToIngredients(vegetable: String) {
+    /**
+     * 添加食材到我的食材
+     */
+    private fun addToIngredients(item: FoodItem) {
         val dbHelper = IngredientDatabaseHelper(requireContext())
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = dateFormat.format(Date())
-        val shelfDays = shelfLifeMap[vegetable] ?: 7
+        val shelfDays = item.shelfLifeDays
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, shelfDays)
         val expireDate = dateFormat.format(calendar.time)
-        dbHelper.addIngredient(vegetable, "1", "斤", date, expireDate)
+        dbHelper.addIngredient(item.name, "1", "斤", date, expireDate)
         AlertDialog.Builder(requireContext())
             .setTitle("添加成功")
-            .setMessage("$vegetable 已添加到今日食材，保鲜期${shelfDays}天")
+            .setMessage("${item.name} 已添加到今日食材，保鲜期${shelfDays}天")
             .setPositiveButton("确定", null)
             .show()
     }
