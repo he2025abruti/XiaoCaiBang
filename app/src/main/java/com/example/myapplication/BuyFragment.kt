@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +17,7 @@ import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -107,6 +109,13 @@ class BuyFragment : Fragment() {
             letterView.setOnClickListener {
                 scrollToLetter(letterView.text.toString())
             }
+        }
+
+        // 食材识别 FAB
+        val fabRecognize = view.findViewById<FloatingActionButton>(R.id.fab_recognize)
+        fabRecognize.setOnClickListener {
+            val intent = Intent(requireContext(), ImageRecognitionActivity::class.java)
+            startActivity(intent)
         }
 
         return view

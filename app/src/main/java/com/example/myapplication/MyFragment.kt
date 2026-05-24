@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -55,7 +54,7 @@ class MyFragment : Fragment() {
     }
 
     private inner class SettingsAdapter : BaseAdapter() {
-        private val settings = listOf("主题设置", "食材识别")
+        private val settings = listOf("主题设置")
 
         override fun getCount(): Int = settings.size
         override fun getItem(position: Int): String = settings[position]
@@ -70,26 +69,16 @@ class MyFragment : Fragment() {
 
             nameView.text = settings[position]
 
-            if (position == 0) {
-                // 主题设置 - 显示 Switch
-                switchView.visibility = View.VISIBLE
-                val isNightMode = sharedPreferences.getBoolean("night_mode", false)
-                switchView.setOnCheckedChangeListener(null)
-                switchView.isChecked = isNightMode
-                switchView.setOnCheckedChangeListener { _, isChecked ->
-                    sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
-                    requireActivity().recreate()
-                }
-                view.setOnClickListener(null)
-            } else {
-                // 食材识别 - 隐藏 Switch，点击跳转
-                switchView.visibility = View.GONE
-                switchView.setOnCheckedChangeListener(null)
-                view.setOnClickListener {
-                    val intent = Intent(requireContext(), ImageRecognitionActivity::class.java)
-                    startActivity(intent)
-                }
+            // 主题设置 - 显示 Switch
+            switchView.visibility = View.VISIBLE
+            val isNightMode = sharedPreferences.getBoolean("night_mode", false)
+            switchView.setOnCheckedChangeListener(null)
+            switchView.isChecked = isNightMode
+            switchView.setOnCheckedChangeListener { _, isChecked ->
+                sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
+                requireActivity().recreate()
             }
+            view.setOnClickListener(null)
 
             return view
         }
