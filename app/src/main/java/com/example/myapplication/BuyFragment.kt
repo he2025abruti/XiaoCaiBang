@@ -3,8 +3,6 @@ package com.example.myapplication
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -14,7 +12,6 @@ import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -28,38 +25,10 @@ class BuyFragment : Fragment() {
     private lateinit var searchBox: EditText
     private lateinit var vegetableList: ListView
     private lateinit var alphabetScroll: ViewGroup
-    private lateinit var loadingProgress: ProgressBar
 
-    private val apiHelper = SpoonacularApiHelper()
-    private val imageLoader = ImageLoader()
-    private val handler = Handler(Looper.getMainLooper())
-
-    // 所有食材数据（API 或本地兜底）
+    // 所有食材数据（本地静态数据）
     private var allFoodItems: List<FoodItem> = emptyList()
     private var filteredItems: List<FoodItem> = emptyList()
-
-    // 原有硬编码数据（兜底用）
-    private val localVegetables = listOf(
-        "白菜" to "B", "菠萝" to "B",
-        "橙子" to "C",
-        "大蒜" to "D", "冬瓜" to "D",
-        "番薯" to "F",
-        "甘蔗" to "G",
-        "胡萝卜" to "H", "黄瓜" to "H", "火龙果" to "H",
-        "韭菜" to "J", "橘子" to "J",
-        "苦瓜" to "K",
-        "萝卜" to "L", "蓝莓" to "L", "辣椒" to "L", "梨" to "L", "荔枝" to "L",
-        "芒果" to "M", "猕猴桃" to "M", "蘑菇" to "M", "木耳" to "M",
-        "南瓜" to "N", "柠檬" to "N", "牛肉" to "N",
-        "苹果" to "P", "葡萄" to "P",
-        "芹菜" to "Q", "茄子" to "Q", "青椒" to "Q",
-        "山药" to "S", "生姜" to "S", "丝瓜" to "S",
-        "土豆" to "T", "桃子" to "T", "甜椒" to "T",
-        "莴笋" to "W",
-        "西红柿" to "X", "西兰花" to "X", "香蕉" to "X", "西瓜" to "X", "香菇" to "X",
-        "洋葱" to "Y", "玉米" to "Y", "柚子" to "Y", "芋头" to "Y",
-        "竹笋" to "Z"
-    ).sortedBy { it.second }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,15 +40,11 @@ class BuyFragment : Fragment() {
         searchBox = view.findViewById(R.id.search_box)
         vegetableList = view.findViewById(R.id.vegetable_list)
         alphabetScroll = view.findViewById(R.id.alphabet_scroll)
-        loadingProgress = view.findViewById(R.id.loading_progress)
 
-        // 先用本地数据展示
-        allFoodItems = apiHelper.getLocalFoodItems()
+        // 加载本地数据
+        allFoodItems = LocalFoodData.getAllFoodItems()
         filteredItems = allFoodItems.toList()
         updateList(filteredItems)
-
-        // 异步加载 API 数据
-        loadFromApi()
 
         // 搜索框筛选
         searchBox.addTextChangedListener(object : TextWatcher {
@@ -122,32 +87,7 @@ class BuyFragment : Fragment() {
     }
 
     /**
-     * 后台线程从 API 加载数据
-     */
-    private fun loadFromApi() {
-        loadingProgress.visibility = View.VISIBLE
-        Thread {
-            val apiItems = apiHelper.searchAllIngredients()
-            handler.post {
-                loadingProgress.visibility = View.GONE
-                if (apiItems.isNotEmpty()) {
-                    allFoodItems = apiItems
-                    // 保持当前搜索状态
-                    val keyword = searchBox.text.toString().trim()
-                    filteredItems = if (keyword.isEmpty()) {
-                        allFoodItems.toList()
-                    } else {
-                        allFoodItems.filter { it.name.contains(keyword) }
-                    }
-                    updateList(filteredItems)
-                }
-                // API 失败时保持本地数据，不闪退
-            }
-        }.start()
-    }
-
-    /**
-     * 更新列表（自定义 Adapter，显示圆形图片 + 名称）
+     * 更新列表
      */
     private fun updateList(items: List<FoodItem>) {
         vegetableList.adapter = VegetableAdapter(items)
@@ -174,9 +114,9 @@ class BuyFragment : Fragment() {
             nameView.text = item.name
             letterView.text = item.pinyinLetter
 
-            // 加载图片
+            // 图片：有URL则加载，否则显示默认图标
             if (item.imageUrl.isNotEmpty()) {
-                imageLoader.loadImage(item.imageUrl, imageView, circular = true)
+                ImageLoader().loadImage(item.imageUrl, imageView, circular = true)
             } else {
                 imageView.setImageResource(android.R.drawable.ic_menu_gallery)
             }
@@ -199,32 +139,15 @@ class BuyFragment : Fragment() {
 
         nameTextView.text = item.name
         seasonTextView.text = "季节: ${item.season}"
-        priceTextView.text = if (item.price.isNotEmpty()) "参考价格: ${item.price}" else "参考价格: 本地市场价"
+        priceTextView.text = "参考价格: ${item.price}"
         tipsTextView.text = "挑选技巧: ${item.tips}"
         storageTextView.text = "保鲜时间: ${item.shelfLifeDays}天"
 
-        // 加载详情图片
+        // 图片：有URL则加载，否则显示默认图标
         if (item.imageUrl.isNotEmpty()) {
-            imageLoader.loadImage(item.imageUrl, imageView, circular = false)
+            ImageLoader().loadImage(item.imageUrl, imageView, circular = false)
         } else {
             imageView.setImageResource(android.R.drawable.ic_menu_gallery)
-        }
-
-        // 如果有 API ID，异步加载详细信息
-        if (item.id > 0) {
-            Thread {
-                val detail = apiHelper.getIngredientDetail(item.id)
-                if (detail != null) {
-                    handler.post {
-                        if (detail.price.isNotEmpty()) {
-                            priceTextView.text = "参考价格: ${detail.price}"
-                        }
-                        if (detail.tips.startsWith("分类:")) {
-                            tipsTextView.text = "分类信息: ${detail.tips.removePrefix("分类:")}"
-                        }
-                    }
-                }
-            }.start()
         }
 
         AlertDialog.Builder(requireContext())

@@ -153,7 +153,7 @@ class ImageRecognitionActivity : AppCompatActivity() {
 
     private fun addIngredientByName(name: String) {
         // 查找保鲜天数
-        val shelfDays = SpoonacularApiHelper.localShelfLifeMap[name] ?: 7
+        val shelfDays = LocalFoodData.getAllShelfLifeMap()[name] ?: 7
 
         val dbHelper = IngredientDatabaseHelper(this)
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

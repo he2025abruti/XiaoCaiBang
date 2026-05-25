@@ -18,13 +18,6 @@
             android:background="@android:drawable/edit_text"
             android:layout_margin="16dp" />
 
-        <ProgressBar
-            android:id="@+id/loading_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
