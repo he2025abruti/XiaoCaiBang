@@ -9,6 +9,10 @@
         android:icon="@android:drawable/ic_menu_view"
         android:title="食材" />
     <item
+        android:id="@+id/nav_recipe"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="菜谱" />
+    <item
         android:id="@+id/nav_my"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="我的" />

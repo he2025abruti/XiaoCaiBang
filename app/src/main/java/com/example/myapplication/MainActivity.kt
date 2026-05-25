@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var buyFragment: BuyFragment
     private lateinit var ingredientsFragment: IngredientsFragment
+    private lateinit var recipeFragment: RecipeFragment
     private lateinit var myFragment: MyFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         // 初始化Fragment
         buyFragment = BuyFragment()
         ingredientsFragment = IngredientsFragment()
+        recipeFragment = RecipeFragment()
         myFragment = MyFragment()
 
         // 默认显示买菜页面
@@ -53,6 +55,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_ingredients -> {
                     replaceFragment(ingredientsFragment)
+                    true
+                }
+                R.id.nav_recipe -> {
+                    replaceFragment(recipeFragment)
                     true
                 }
                 R.id.nav_my -> {

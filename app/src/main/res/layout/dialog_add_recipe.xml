@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- 菜名 -->
+        <EditText
+            android:id="@+id/recipe_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="菜名 *"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 简介 -->
+        <EditText
+            android:id="@+id/recipe_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="简介/备注（选填）"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 食材清单 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="食材清单 *（用逗号分隔）"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/recipe_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="如：猪肉, 青椒, 蒜, 生姜"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 分类 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="分类 *"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="4dp" />
+
+        <Spinner
+            android:id="@+id/recipe_category_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 详细做法 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="详细做法 *"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/recipe_steps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入详细做法步骤"
+            android:minLines="4"
+            android:gravity="top"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 图片选择 -->
+        <TextView
+            android:id="@+id/recipe_select_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ 选择图片（选填）"
+            android:textSize="14sp"
+            android:textColor="#FF666666"
+            android:padding="8dp" />
+
+        <ImageView
+            android:id="@+id/recipe_image_preview"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>
