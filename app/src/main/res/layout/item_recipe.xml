@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="17sp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/recipe_name_color"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -55,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
-                    android:textColor="@android:color/darker_gray"
+                    android:textColor="?android:attr/textColorSecondary"
                     android:layout_marginStart="8dp" />
 
             </LinearLayout>
@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/recipe_desc_color"
                 android:layout_marginTop="6dp"
                 android:maxLines="2"
                 android:ellipsize="end" />
@@ -83,14 +83,14 @@
 
     </LinearLayout>
 
-    <!-- 添加按钮 -->
+    <!-- 收藏按钮 -->
     <TextView
         android:id="@+id/recipe_add_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="+ 收藏"
         android:textSize="12sp"
-        android:textColor="#FF666666"
+        android:textColor="@color/favorite_btn_color"
         android:layout_gravity="end"
         android:layout_marginTop="4dp"
         android:paddingStart="12dp"

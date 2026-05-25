@@ -10,7 +10,7 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
 
     companion object {
         private const val DATABASE_NAME = "ingredient.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
         private const val TABLE_INGREDIENTS = "ingredients"
         private const val COLUMN_ID = "id"
         private const val COLUMN_NAME = "name"
@@ -27,6 +27,19 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
         private const val COLUMN_RECIPE_INGREDIENTS = "ingredients"
         private const val COLUMN_RECIPE_IMAGE_URL = "imageUrl"
         private const val COLUMN_RECIPE_DESCRIPTION = "description"
+
+        private const val TABLE_FAVORITES = "favorites"
+        private const val COLUMN_FAV_RECIPE_NAME = "recipe_name"
+        private const val COLUMN_FAV_CATEGORY = "category"
+        private const val COLUMN_FAV_STEPS = "steps"
+        private const val COLUMN_FAV_INGREDIENTS = "ingredients"
+        private const val COLUMN_FAV_IMAGE_URL = "imageUrl"
+        private const val COLUMN_FAV_DESCRIPTION = "description"
+        private const val COLUMN_FAV_COOK_TIME = "cookTime"
+        private const val COLUMN_FAV_GONGYI = "gongyi"
+        private const val COLUMN_FAV_KOUWEI = "kouwei"
+        private const val COLUMN_FAV_SIDE_INGREDIENTS = "sideIngredients"
+        private const val COLUMN_FAV_SEASONINGS = "seasonings"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -48,6 +61,20 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
                 "$COLUMN_RECIPE_IMAGE_URL TEXT, " +
                 "$COLUMN_RECIPE_DESCRIPTION TEXT)"
         db.execSQL(createRecipes)
+
+        val createFavorites = "CREATE TABLE $TABLE_FAVORITES " +
+                "($COLUMN_FAV_RECIPE_NAME TEXT PRIMARY KEY, " +
+                "$COLUMN_FAV_CATEGORY TEXT, " +
+                "$COLUMN_FAV_GONGYI TEXT, " +
+                "$COLUMN_FAV_KOUWEI TEXT, " +
+                "$COLUMN_FAV_STEPS TEXT, " +
+                "$COLUMN_FAV_INGREDIENTS TEXT, " +
+                "$COLUMN_FAV_SIDE_INGREDIENTS TEXT, " +
+                "$COLUMN_FAV_SEASONINGS TEXT, " +
+                "$COLUMN_FAV_IMAGE_URL TEXT, " +
+                "$COLUMN_FAV_DESCRIPTION TEXT, " +
+                "$COLUMN_FAV_COOK_TIME INTEGER)"
+        db.execSQL(createFavorites)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -64,6 +91,21 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
                     "$COLUMN_RECIPE_IMAGE_URL TEXT, " +
                     "$COLUMN_RECIPE_DESCRIPTION TEXT)"
             db.execSQL(createRecipes)
+        }
+        if (oldVersion < 4) {
+            val createFavorites = "CREATE TABLE $TABLE_FAVORITES " +
+                    "($COLUMN_FAV_RECIPE_NAME TEXT PRIMARY KEY, " +
+                    "$COLUMN_FAV_CATEGORY TEXT, " +
+                    "$COLUMN_FAV_GONGYI TEXT, " +
+                    "$COLUMN_FAV_KOUWEI TEXT, " +
+                    "$COLUMN_FAV_STEPS TEXT, " +
+                    "$COLUMN_FAV_INGREDIENTS TEXT, " +
+                    "$COLUMN_FAV_SIDE_INGREDIENTS TEXT, " +
+                    "$COLUMN_FAV_SEASONINGS TEXT, " +
+                    "$COLUMN_FAV_IMAGE_URL TEXT, " +
+                    "$COLUMN_FAV_DESCRIPTION TEXT, " +
+                    "$COLUMN_FAV_COOK_TIME INTEGER)"
+            db.execSQL(createFavorites)
         }
     }
 
@@ -188,5 +230,76 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
     fun deleteRecipe(id: Int) {
         val db = this.writableDatabase
         db.delete(TABLE_RECIPES, "$COLUMN_RECIPE_ID = ?", arrayOf(id.toString()))
+    }
+
+    // ── 收藏相关方法 ──
+
+    fun addFavorite(recipe: Recipe) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_FAV_RECIPE_NAME, recipe.name)
+        values.put(COLUMN_FAV_CATEGORY, recipe.category)
+        values.put(COLUMN_FAV_GONGYI, recipe.gongyi)
+        values.put(COLUMN_FAV_KOUWEI, recipe.kouwei)
+        values.put(COLUMN_FAV_STEPS, recipe.steps)
+        values.put(COLUMN_FAV_INGREDIENTS, recipe.mainIngredients)
+        values.put(COLUMN_FAV_SIDE_INGREDIENTS, recipe.sideIngredients)
+        values.put(COLUMN_FAV_SEASONINGS, recipe.seasonings)
+        values.put(COLUMN_FAV_IMAGE_URL, recipe.imageUrl)
+        values.put(COLUMN_FAV_DESCRIPTION, recipe.description)
+        values.put(COLUMN_FAV_COOK_TIME, recipe.cookTime)
+        db.insertWithOnConflict(TABLE_FAVORITES, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    fun removeFavorite(recipeName: String) {
+        val db = this.writableDatabase
+        db.delete(TABLE_FAVORITES, "$COLUMN_FAV_RECIPE_NAME = ?", arrayOf(recipeName))
+    }
+
+    fun isFavorite(recipeName: String): Boolean {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT 1 FROM $TABLE_FAVORITES WHERE $COLUMN_FAV_RECIPE_NAME = ?", arrayOf(recipeName))
+        val exists = cursor.moveToFirst()
+        cursor.close()
+        return exists
+    }
+
+    fun getAllFavorites(): List<Recipe> {
+        val recipes = mutableListOf<Recipe>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_FAVORITES", null)
+        if (cursor.moveToFirst()) {
+            do {
+                recipes.add(Recipe(
+                    id = 0,
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_RECIPE_NAME)),
+                    category = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_CATEGORY)) ?: "",
+                    gongyi = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_GONGYI)) ?: "",
+                    kouwei = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_KOUWEI)) ?: "",
+                    steps = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_STEPS)) ?: "",
+                    mainIngredients = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_INGREDIENTS)) ?: "",
+                    sideIngredients = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_SIDE_INGREDIENTS)) ?: "",
+                    seasonings = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_SEASONINGS)) ?: "",
+                    cookTime = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FAV_COOK_TIME)),
+                    imageUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_IMAGE_URL)) ?: "",
+                    description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_DESCRIPTION)) ?: ""
+                ))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return recipes
+    }
+
+    fun getFavoriteNames(): Set<String> {
+        val names = mutableSetOf<String>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT $COLUMN_FAV_RECIPE_NAME FROM $TABLE_FAVORITES", null)
+        if (cursor.moveToFirst()) {
+            do {
+                names.add(cursor.getString(0))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return names
     }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="recipe_name_color">#DEFFFFFF</color>
+    <color name="recipe_desc_color">#99FFFFFF</color>
+    <color name="expired_text_color">#FF888888</color>
+    <color name="tag_unselected_text">#FFBBBBBB</color>
+    <color name="favorite_btn_color">#FFBBBBBB</color>
+    <color name="card_bg_color">#FF2C2C2C</color>
+    <color name="tag_unselected_bg">#FF3C3C3C</color>
+    <color name="tag_unselected_stroke">#FF555555</color>
+</resources>

@@ -54,7 +54,7 @@ class MyFragment : Fragment() {
     }
 
     private inner class SettingsAdapter : BaseAdapter() {
-        private val settings = listOf("主题设置")
+        private val settings = listOf("我的收藏", "主题设置")
 
         override fun getCount(): Int = settings.size
         override fun getItem(position: Int): String = settings[position]
@@ -69,19 +69,46 @@ class MyFragment : Fragment() {
 
             nameView.text = settings[position]
 
-            // 主题设置 - 显示 Switch
-            switchView.visibility = View.VISIBLE
-            val isNightMode = sharedPreferences.getBoolean("night_mode", false)
-            switchView.setOnCheckedChangeListener(null)
-            switchView.isChecked = isNightMode
-            switchView.setOnCheckedChangeListener { _, isChecked ->
-                sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
-                requireActivity().recreate()
+            when (position) {
+                0 -> {
+                    // 我的收藏 - 隐藏 Switch，点击跳转
+                    switchView.visibility = View.GONE
+                    switchView.setOnCheckedChangeListener(null)
+                    view.setOnClickListener {
+                        showFavoritePage()
+                    }
+                }
+                1 -> {
+                    // 主题设置 - 显示 Switch
+                    switchView.visibility = View.VISIBLE
+                    val isNightMode = sharedPreferences.getBoolean("night_mode", false)
+                    switchView.setOnCheckedChangeListener(null)
+                    switchView.isChecked = isNightMode
+                    switchView.setOnCheckedChangeListener { _, isChecked ->
+                        sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
+                        requireActivity().recreate()
+                    }
+                    view.setOnClickListener(null)
+                }
             }
-            view.setOnClickListener(null)
 
             return view
         }
+    }
+
+    private fun showFavoritePage() {
+        val fragment = FavoriteRecipeFragment()
+        fragment.onBackClick = {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, this)
+                .commit()
+        }
+        fragment.onFavoriteChanged = {
+            // 收藏变化时的回调，留空即可
+        }
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 
     private fun showChangeAvatarDialog() {

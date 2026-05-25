@@ -33,7 +33,7 @@ class RecipeFragment : Fragment() {
     private var currentCategory = "全部"
     private var currentKeyword = ""
     private var userIngredientNames = setOf<String>()
-    private var networkLoaded = false
+    private var favoriteNames = setOf<String>()
 
     private lateinit var adapter: RecipeAdapter
     private lateinit var dbHelper: IngredientDatabaseHelper
@@ -52,8 +52,9 @@ class RecipeFragment : Fragment() {
 
         dbHelper = IngredientDatabaseHelper(requireContext())
 
-        // 加载用户食材
+        // 加载用户食材和收藏
         loadUserIngredients()
+        loadFavorites()
 
         // 加载嵌入式菜谱数据
         allRecipes.addAll(RecipeData.RECIPE_LIST)
@@ -69,11 +70,12 @@ class RecipeFragment : Fragment() {
         categories = RecipeData.getAllCategories()
         setupCategoryTags()
         adapter = RecipeAdapter(requireContext(), emptyList())
+        adapter.updateFavorites(favoriteNames)
         recipeList.adapter = adapter
 
-        // 设置添加按钮点击收藏
-        adapter.setOnAddClickListener { recipe ->
-            showCollectDialog(recipe)
+        // 收藏切换
+        adapter.setOnFavoriteToggle { recipe ->
+            toggleFavorite(recipe)
         }
 
         // 列表项点击显示详情
@@ -109,14 +111,31 @@ class RecipeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // 刷新用户食材（可能在食材页有变动）
         loadUserIngredients()
+        loadFavorites()
+        adapter.updateFavorites(favoriteNames)
         applyFilter()
     }
 
     private fun loadUserIngredients() {
         val ingredients = dbHelper.getAllIngredients()
         userIngredientNames = ingredients.map { it.name }.toSet()
+    }
+
+    private fun loadFavorites() {
+        favoriteNames = dbHelper.getFavoriteNames()
+    }
+
+    private fun toggleFavorite(recipe: Recipe) {
+        if (favoriteNames.contains(recipe.name)) {
+            dbHelper.removeFavorite(recipe.name)
+            Toast.makeText(requireContext(), "已取消收藏「${recipe.name}」", Toast.LENGTH_SHORT).show()
+        } else {
+            dbHelper.addFavorite(recipe)
+            Toast.makeText(requireContext(), "已收藏「${recipe.name}」", Toast.LENGTH_SHORT).show()
+        }
+        loadFavorites()
+        adapter.updateFavorites(favoriteNames)
     }
 
     /**
@@ -151,11 +170,9 @@ class RecipeFragment : Fragment() {
 
                     if (networkRecipes.isNotEmpty()) {
                         activity?.runOnUiThread {
-                            // 去重：不覆盖已有的嵌入式数据中的同名菜谱
                             val existingNames = allRecipes.map { it.name }.toSet()
                             val newRecipes = networkRecipes.filter { it.name !in existingNames }
                             allRecipes.addAll(newRecipes)
-                            networkLoaded = true
                             categories = buildCategories()
                             rebuildCategoryTags()
                             applyFilter()
@@ -164,7 +181,7 @@ class RecipeFragment : Fragment() {
                 }
                 conn.disconnect()
             } catch (e: Exception) {
-                // 网络请求失败，静默降级，使用嵌入式数据
+                // 网络请求失败，静默降级
             }
         }.start()
     }
@@ -173,31 +190,20 @@ class RecipeFragment : Fragment() {
         return listOf("全部") + allRecipes.map { it.category }.filter { it.isNotEmpty() }.distinct().sorted()
     }
 
-    /**
-     * 设置分类标签
-     */
     private fun setupCategoryTags() {
         categoryContainer.removeAllViews()
         for (cat in categories) {
-            val tagView = createTagView(cat)
-            categoryContainer.addView(tagView)
+            categoryContainer.addView(createTagView(cat))
         }
     }
 
-    /**
-     * 网络数据加载后重建分类标签
-     */
     private fun rebuildCategoryTags() {
         categoryContainer.removeAllViews()
         for (cat in categories) {
-            val tagView = createTagView(cat)
-            categoryContainer.addView(tagView)
+            categoryContainer.addView(createTagView(cat))
         }
     }
 
-    /**
-     * 创建单个分类标签
-     */
     private fun createTagView(category: String): TextView {
         val tagView = TextView(requireContext())
         tagView.text = category
@@ -216,7 +222,6 @@ class RecipeFragment : Fragment() {
 
         tagView.setOnClickListener {
             currentCategory = category
-            // 更新所有标签样式
             for (i in 0 until categoryContainer.childCount) {
                 val child = categoryContainer.getChildAt(i) as TextView
                 updateTagStyle(child, child.text == category)
@@ -234,23 +239,20 @@ class RecipeFragment : Fragment() {
             tagView.setTypeface(null, Typeface.BOLD)
         } else {
             tagView.setBackgroundResource(R.drawable.bg_tag_unselected)
-            tagView.setTextColor(0xFF666666.toInt())
+            tagView.setTextColor(
+                resources.getColor(R.color.tag_unselected_text, null)
+            )
             tagView.setTypeface(null, Typeface.NORMAL)
         }
     }
 
-    /**
-     * 应用搜索和分类过滤
-     */
     private fun applyFilter() {
         var result = allRecipes.toList()
 
-        // 分类过滤
         if (currentCategory != "全部") {
             result = result.filter { it.category == currentCategory }
         }
 
-        // 搜索过滤
         if (currentKeyword.isNotEmpty()) {
             result = result.filter { recipe ->
                 recipe.name.contains(currentKeyword) ||
@@ -260,7 +262,6 @@ class RecipeFragment : Fragment() {
             }
         }
 
-        // 计算食材匹配度
         filteredRecipes = result.map { recipe ->
             val recipeIngredients = recipe.getAllIngredientNames()
             val totalCount = recipeIngredients.size
@@ -279,9 +280,6 @@ class RecipeFragment : Fragment() {
         adapter.updateData(filteredRecipes)
     }
 
-    /**
-     * 显示菜谱详情
-     */
     private fun showRecipeDetail(recipe: Recipe) {
         val sb = StringBuilder()
         sb.append("【菜名】${recipe.name}\n\n")
@@ -294,31 +292,19 @@ class RecipeFragment : Fragment() {
         if (recipe.seasonings.isNotEmpty()) sb.append("【调料】\n${recipe.seasonings}\n")
         sb.append("\n【做法】\n${recipe.steps}")
 
+        val isFav = favoriteNames.contains(recipe.name)
+        val favLabel = if (isFav) "取消收藏" else "收藏"
+
         AlertDialog.Builder(requireContext())
             .setTitle(recipe.name)
             .setMessage(sb.toString())
-            .setPositiveButton("收藏") { _, _ -> showCollectDialog(recipe) }
+            .setPositiveButton(favLabel) { _, _ -> toggleFavorite(recipe) }
             .setNegativeButton("关闭", null)
             .show()
     }
 
-    /**
-     * 收藏菜谱提示
-     */
-    private fun showCollectDialog(recipe: Recipe) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("收藏成功")
-            .setMessage("「${recipe.name}」已加入收藏")
-            .setPositiveButton("确定", null)
-            .show()
-    }
-
-    /**
-     * 显示添加自定义菜谱弹窗
-     */
     private fun showAddRecipeDialog() {
         val dialog = AddRecipeDialog(requireContext(), categories) { recipe ->
-            // 保存到 SQLite
             dbHelper.addRecipe(
                 recipe.name,
                 recipe.category,
@@ -327,7 +313,6 @@ class RecipeFragment : Fragment() {
                 recipe.imageUrl,
                 recipe.description
             )
-            // 加入列表
             allRecipes.add(0, recipe)
             categories = buildCategories()
             rebuildCategoryTags()

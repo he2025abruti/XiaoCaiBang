@@ -22,9 +22,23 @@ class RecipeAdapter(
     private var items: List<RecipeWithStatus>
 ) : BaseAdapter() {
 
+    private var favoriteNames: Set<String> = emptySet()
+    private var onFavoriteToggle: ((Recipe) -> Unit)? = null
+
     fun updateData(newItems: List<RecipeWithStatus>) {
         items = newItems
         notifyDataSetChanged()
+    }
+
+    fun getItems(): List<RecipeWithStatus> = items
+
+    fun updateFavorites(names: Set<String>) {
+        favoriteNames = names
+        notifyDataSetChanged()
+    }
+
+    fun setOnFavoriteToggle(listener: (Recipe) -> Unit) {
+        onFavoriteToggle = listener
     }
 
     override fun getCount(): Int = items.size
@@ -73,16 +87,14 @@ class RecipeAdapter(
             imageView.setImageResource(android.R.drawable.ic_menu_gallery)
         }
 
+        // 更新收藏按钮状态
+        val isFav = favoriteNames.contains(recipe.name)
+        addBtn.text = if (isFav) "★ 已收藏" else "+ 收藏"
+
         addBtn.setOnClickListener {
-            onAddClickListener?.invoke(recipe)
+            onFavoriteToggle?.invoke(recipe)
         }
 
         return view
-    }
-
-    private var onAddClickListener: ((Recipe) -> Unit)? = null
-
-    fun setOnAddClickListener(listener: (Recipe) -> Unit) {
-        onAddClickListener = listener
     }
 }

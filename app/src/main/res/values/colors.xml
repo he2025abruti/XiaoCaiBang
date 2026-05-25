@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="recipe_name_color">#DD000000</color>
+    <color name="recipe_desc_color">#8A000000</color>
+    <color name="expired_text_color">#FF999999</color>
+    <color name="tag_unselected_text">#FF666666</color>
+    <color name="favorite_btn_color">#FF666666</color>
+    <color name="card_bg_color">#FFFFFFFF</color>
+    <color name="tag_unselected_bg">#FFF0F0F0</color>
+    <color name="tag_unselected_stroke">#FFE0E0E0</color>
 </resources>

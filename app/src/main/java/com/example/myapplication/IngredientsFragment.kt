@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
 import android.widget.CalendarView
@@ -92,8 +93,8 @@ class IngredientsFragment : Fragment() {
             // Gray out brief if all expired, normal otherwise
             val allExpired = ingredients.all { isExpired(it.expireDate) }
             ingredientBrief.setTextColor(
-                if (allExpired) 0xFF999999.toInt()
-                else resources.getColor(android.R.color.primary_text_light, null)
+                if (allExpired) ContextCompat.getColor(requireContext(), R.color.expired_text_color)
+                else ContextCompat.getColor(requireContext(), android.R.color.primary_text_light)
             )
 
             ingredientDetailList.adapter = IngredientDetailAdapter(ingredients)
@@ -140,18 +141,20 @@ class IngredientsFragment : Fragment() {
                 expireView.visibility = View.GONE
             }
 
+            val ctx = requireContext()
             if (expired) {
                 statusView.text = "已过期"
                 statusView.setTextColor(0xFFFF4444.toInt())
-                nameView.setTextColor(0xFF999999.toInt())
-                quantityView.setTextColor(0xFF999999.toInt())
-                expireView.setTextColor(0xFF999999.toInt())
+                val expiredColor = ContextCompat.getColor(ctx, R.color.expired_text_color)
+                nameView.setTextColor(expiredColor)
+                quantityView.setTextColor(expiredColor)
+                expireView.setTextColor(expiredColor)
             } else {
                 statusView.text = "正常"
                 statusView.setTextColor(0xFF4CAF50.toInt())
-                nameView.setTextColor(0xDD000000.toInt())
-                quantityView.setTextColor(0x8A000000.toInt())
-                expireView.setTextColor(0x8A000000.toInt())
+                nameView.setTextColor(ContextCompat.getColor(ctx, android.R.color.primary_text_light))
+                quantityView.setTextColor(ContextCompat.getColor(ctx, android.R.color.secondary_text_light))
+                expireView.setTextColor(ContextCompat.getColor(ctx, android.R.color.secondary_text_light))
             }
 
             return view
