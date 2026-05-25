@@ -68,6 +68,13 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        // 恢复 recreate() 前保存的 Tab
+        val restoreTab = prefs.getInt("restore_tab", -1)
+        if (restoreTab != -1) {
+            prefs.edit().remove("restore_tab").apply()
+            bottomNavigationView.selectedItemId = restoreTab
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {

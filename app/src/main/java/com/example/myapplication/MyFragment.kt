@@ -85,7 +85,10 @@ class MyFragment : Fragment() {
                     switchView.setOnCheckedChangeListener(null)
                     switchView.isChecked = isNightMode
                     switchView.setOnCheckedChangeListener { _, isChecked ->
-                        sharedPreferences.edit().putBoolean("night_mode", isChecked).apply()
+                        sharedPreferences.edit()
+                            .putBoolean("night_mode", isChecked)
+                            .putInt("restore_tab", R.id.nav_my)
+                            .apply()
                         requireActivity().recreate()
                     }
                     view.setOnClickListener(null)
@@ -99,8 +102,9 @@ class MyFragment : Fragment() {
     private fun showFavoritePage() {
         val fragment = FavoriteRecipeFragment()
         fragment.onBackClick = {
-            if (isAdded && activity != null) {
-                requireActivity().supportFragmentManager.beginTransaction()
+            val act = fragment.activity
+            if (act != null && fragment.isAdded) {
+                act.supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, MyFragment())
                     .commitAllowingStateLoss()
             }
