@@ -54,7 +54,7 @@ class MyFragment : Fragment() {
     }
 
     private inner class SettingsAdapter : BaseAdapter() {
-        private val settings = listOf("我的收藏", "主题设置")
+        private val settings = listOf("我的收藏", "猜猜今天吃什么", "主题设置")
 
         override fun getCount(): Int = settings.size
         override fun getItem(position: Int): String = settings[position]
@@ -79,6 +79,14 @@ class MyFragment : Fragment() {
                     }
                 }
                 1 -> {
+                    // 猜猜今天吃什么 - 隐藏 Switch，点击跳转
+                    switchView.visibility = View.GONE
+                    switchView.setOnCheckedChangeListener(null)
+                    view.setOnClickListener {
+                        showSpinWheelPage()
+                    }
+                }
+                2 -> {
                     // 主题设置 - 显示 Switch
                     switchView.visibility = View.VISIBLE
                     val isNightMode = sharedPreferences.getBoolean("night_mode", false)
@@ -111,6 +119,21 @@ class MyFragment : Fragment() {
         }
         fragment.onFavoriteChanged = {
             // 收藏变化时的回调，留空即可
+        }
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commitAllowingStateLoss()
+    }
+
+    private fun showSpinWheelPage() {
+        val fragment = SpinWheelFragment()
+        fragment.onBackClick = {
+            val act = fragment.activity
+            if (act != null && fragment.isAdded) {
+                act.supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, MyFragment())
+                    .commitAllowingStateLoss()
+            }
         }
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
