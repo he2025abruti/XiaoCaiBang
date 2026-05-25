@@ -8,4 +8,6 @@
     <color name="card_bg_color">#FF2C2C2C</color>
     <color name="tag_unselected_bg">#FF3C3C3C</color>
     <color name="tag_unselected_stroke">#FF555555</color>
+    <color name="ingredient_name_color">#DEFFFFFF</color>
+    <color name="ingredient_quantity_color">#99FFFFFF</color>
 </resources>

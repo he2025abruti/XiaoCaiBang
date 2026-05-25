@@ -99,16 +99,18 @@ class MyFragment : Fragment() {
     private fun showFavoritePage() {
         val fragment = FavoriteRecipeFragment()
         fragment.onBackClick = {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, this)
-                .commit()
+            if (isAdded && activity != null) {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, MyFragment())
+                    .commitAllowingStateLoss()
+            }
         }
         fragment.onFavoriteChanged = {
             // 收藏变化时的回调，留空即可
         }
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .commit()
+            .commitAllowingStateLoss()
     }
 
     private fun showChangeAvatarDialog() {

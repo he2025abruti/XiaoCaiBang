@@ -94,7 +94,7 @@ class IngredientsFragment : Fragment() {
             val allExpired = ingredients.all { isExpired(it.expireDate) }
             ingredientBrief.setTextColor(
                 if (allExpired) ContextCompat.getColor(requireContext(), R.color.expired_text_color)
-                else ContextCompat.getColor(requireContext(), android.R.color.primary_text_light)
+                else ContextCompat.getColor(requireContext(), R.color.ingredient_name_color)
             )
 
             ingredientDetailList.adapter = IngredientDetailAdapter(ingredients)
@@ -152,9 +152,9 @@ class IngredientsFragment : Fragment() {
             } else {
                 statusView.text = "正常"
                 statusView.setTextColor(0xFF4CAF50.toInt())
-                nameView.setTextColor(ContextCompat.getColor(ctx, android.R.color.primary_text_light))
-                quantityView.setTextColor(ContextCompat.getColor(ctx, android.R.color.secondary_text_light))
-                expireView.setTextColor(ContextCompat.getColor(ctx, android.R.color.secondary_text_light))
+                nameView.setTextColor(ContextCompat.getColor(ctx, R.color.ingredient_name_color))
+                quantityView.setTextColor(ContextCompat.getColor(ctx, R.color.ingredient_quantity_color))
+                expireView.setTextColor(ContextCompat.getColor(ctx, R.color.ingredient_quantity_color))
             }
 
             return view
