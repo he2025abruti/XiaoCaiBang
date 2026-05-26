@@ -52,7 +52,7 @@ class ModelDownloader(
                     throw Exception("HTTP ${connection.responseCode}")
                 }
 
-                val totalSize = connection.contentLength.toLong()
+                val totalSize = connection.contentLengthLong
                 val input = connection.inputStream
                 val output = targetFile.outputStream()
 
@@ -64,7 +64,7 @@ class ModelDownloader(
                     output.write(buffer, 0, bytesRead)
                     downloaded += bytesRead
                     (context as? Activity)?.runOnUiThread {
-                        onProgress(downloaded, totalSize)
+                        onProgress(downloaded, if (totalSize > 0) totalSize else downloaded)
                     }
                 }
 

@@ -1,7 +1,12 @@
 package com.example.myapplication
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +17,12 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import java.io.File
+import java.io.FileOutputStream
 
 class MyFragment : Fragment() {
 
@@ -20,6 +30,31 @@ class MyFragment : Fragment() {
     private lateinit var username: TextView
     private lateinit var settingsList: ListView
     private lateinit var sharedPreferences: SharedPreferences
+
+    // 相册选图
+    private val pickAvatarLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { setAvatarFromUri(it) }
+    }
+
+    // 拍照（返回缩略图 Bitmap，更可靠）
+    private val takeAvatarLauncher = registerForActivityResult(
+        ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        bitmap?.let { setAvatarFromBitmap(it) }
+    }
+
+    // 相机权限请求
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted: Boolean ->
+        if (granted) {
+            takeAvatarLauncher.launch(null)
+        } else {
+            Toast.makeText(requireContext(), "需要相机权限才能拍照", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,6 +71,9 @@ class MyFragment : Fragment() {
         // 加载保存的用户名
         val savedUsername = sharedPreferences.getString("username", "用户名")
         username.text = savedUsername
+
+        // 加载保存的头像
+        loadSavedAvatar()
 
         // 设置头像点击事件
         avatar.setOnClickListener {
@@ -145,12 +183,63 @@ class MyFragment : Fragment() {
             .setTitle("修改头像")
             .setMessage("选择头像来源")
             .setPositiveButton("相机") { _, _ ->
-                println("打开相机")
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    takeAvatarLauncher.launch(null)
+                } else {
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
             }
             .setNegativeButton("相册") { _, _ ->
-                println("打开相册")
+                pickAvatarLauncher.launch("image/*")
             }
             .show()
+    }
+
+    private fun setAvatarFromUri(uri: Uri) {
+        try {
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+            if (bitmap != null) {
+                setAvatarFromBitmap(bitmap)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun setAvatarFromBitmap(bitmap: Bitmap) {
+        avatar.setImageBitmap(bitmap)
+        avatar.scaleType = ImageView.ScaleType.CENTER_CROP
+        saveAvatarToInternal(bitmap)
+    }
+
+    private fun saveAvatarToInternal(bitmap: Bitmap) {
+        try {
+            val file = File(requireContext().filesDir, "avatar.jpg")
+            FileOutputStream(file).use { fos ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos)
+            }
+            sharedPreferences.edit().putString("avatar_path", file.absolutePath).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun loadSavedAvatar() {
+        val path = sharedPreferences.getString("avatar_path", null)
+        if (path != null) {
+            val file = File(path)
+            if (file.exists()) {
+                val bitmap = BitmapFactory.decodeFile(path)
+                if (bitmap != null) {
+                    avatar.setImageBitmap(bitmap)
+                    avatar.scaleType = ImageView.ScaleType.CENTER_CROP
+                }
+            }
+        }
     }
 
     private fun showChangeUsernameDialog() {

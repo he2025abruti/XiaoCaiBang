@@ -22,11 +22,8 @@ class AiRecipeGenerator(private val context: Context) {
 
         Thread {
             try {
-                val result = if (llmEngine.isReady()) {
-                    llmEngine.generate(ingredientNames)
-                } else {
-                    ruleEngine.generate(ingredientNames)
-                }
+                // 当前 LLM 引擎为占位，始终使用规则引擎
+                val result = ruleEngine.generate(ingredientNames)
 
                 (context as? Activity)?.runOnUiThread {
                     onResult(result)
@@ -39,7 +36,6 @@ class AiRecipeGenerator(private val context: Context) {
         }.start()
     }
 
-    fun isModelReady(): Boolean = llmEngine.isReady()
-
-    fun getModelDownloader(): ModelDownloader = llmEngine.getDownloader()
+    // 规则引擎始终可用，无需下载模型
+    fun isModelReady(): Boolean = true
 }

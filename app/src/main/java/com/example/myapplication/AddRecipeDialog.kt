@@ -43,11 +43,7 @@ class AddRecipeDialog(
         val aiStatusText = view.findViewById<TextView>(R.id.ai_status_text)
         val aiGenerator = AiRecipeGenerator(context)
 
-        if (aiGenerator.isModelReady()) {
-            aiStatusText.text = "AI 模型已就绪（离线可用）"
-        } else {
-            aiStatusText.text = "首次使用需下载 AI 模型（约500MB）"
-        }
+        aiStatusText.text = "基于规则引擎，离线可用"
 
         aiButton.setOnClickListener {
             val dbHelper = IngredientDatabaseHelper(context)
@@ -55,13 +51,6 @@ class AddRecipeDialog(
 
             if (ingredients.isEmpty()) {
                 Toast.makeText(context, "还没添加食材哦，快去食材页加一些吧～", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (!aiGenerator.isModelReady()) {
-                showModelDownloadDialog(aiGenerator, aiButton, aiStatusText) {
-                    performAiGenerate(aiGenerator, ingredients, nameEdit, ingredientsEdit, categorySpinner, stepsEdit, aiButton)
-                }
                 return@setOnClickListener
             }
 
@@ -164,33 +153,4 @@ class AddRecipeDialog(
         )
     }
 
-    private fun showModelDownloadDialog(
-        generator: AiRecipeGenerator,
-        aiButton: Button,
-        aiStatusText: TextView,
-        onComplete: () -> Unit
-    ) {
-        val progressDialog = android.app.ProgressDialog(context)
-        progressDialog.setTitle("正在准备 AI 模型")
-        progressDialog.setMessage("首次使用需下载模型文件（约500MB），下载后完全离线可用")
-        progressDialog.setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL)
-        progressDialog.setCancelable(false)
-        progressDialog.show()
-
-        generator.getModelDownloader().download(
-            onProgress = { downloaded, total ->
-                val percent = (downloaded * 100 / total).toInt()
-                progressDialog.progress = percent
-            },
-            onComplete = {
-                progressDialog.dismiss()
-                aiStatusText.text = "AI 模型已就绪（离线可用）"
-                onComplete()
-            },
-            onError = { error ->
-                progressDialog.dismiss()
-                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-            }
-        )
-    }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,15 +12,16 @@
         android:layout_height="200dp"
         android:background="@color/primary_color">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/avatar"
             android:layout_width="86dp"
             android:layout_height="86dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:src="@android:drawable/ic_menu_myplaces"
-            android:background="@drawable/bg_avatar_border"
-            android:padding="4dp" />
+            android:scaleType="centerCrop"
+            android:padding="4dp"
+            app:shapeAppearance="@style/CircleAvatar" />
 
         <TextView
             android:id="@+id/username"
