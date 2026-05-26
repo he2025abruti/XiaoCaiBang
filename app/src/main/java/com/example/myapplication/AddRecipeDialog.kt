@@ -6,7 +6,6 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
@@ -37,25 +36,6 @@ class AddRecipeDialog(
         val spinnerAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, categoryList)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpinner.adapter = spinnerAdapter
-
-        // AI 生成按钮
-        val aiButton = view.findViewById<Button>(R.id.btn_ai_generate)
-        val aiStatusText = view.findViewById<TextView>(R.id.ai_status_text)
-        val aiGenerator = AiRecipeGenerator(context)
-
-        aiStatusText.text = "基于规则引擎，离线可用"
-
-        aiButton.setOnClickListener {
-            val dbHelper = IngredientDatabaseHelper(context)
-            val ingredients = dbHelper.getAllIngredients()
-
-            if (ingredients.isEmpty()) {
-                Toast.makeText(context, "还没添加食材哦，快去食材页加一些吧～", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            performAiGenerate(aiGenerator, ingredients, nameEdit, ingredientsEdit, categorySpinner, stepsEdit, aiButton)
-        }
 
         // 图片选择（暂不实现，预留入口）
         selectImageText.visibility = View.GONE
@@ -114,43 +94,6 @@ class AddRecipeDialog(
             onRecipeAdded(recipe)
             dialog.dismiss()
         }
-    }
-
-    private fun performAiGenerate(
-        generator: AiRecipeGenerator,
-        ingredients: List<Ingredient>,
-        nameEdit: EditText,
-        ingredientsEdit: EditText,
-        categorySpinner: Spinner,
-        stepsEdit: EditText,
-        aiButton: Button
-    ) {
-        aiButton.isEnabled = false
-        aiButton.text = "AI 思考中..."
-
-        generator.generate(
-            userIngredients = ingredients,
-            onResult = { result ->
-                nameEdit.setText(result.name)
-                ingredientsEdit.setText(result.ingredients)
-                stepsEdit.setText(result.steps)
-
-                val categoryList = (categorySpinner.adapter as ArrayAdapter<String>)
-                val pos = (0 until categoryList.count).firstOrNull {
-                    categoryList.getItem(it) == result.category
-                } ?: 0
-                categorySpinner.setSelection(pos)
-
-                aiButton.isEnabled = true
-                aiButton.text = "AI 生成菜谱"
-                Toast.makeText(context, "AI 菜谱生成成功！", Toast.LENGTH_SHORT).show()
-            },
-            onError = { errorMsg ->
-                aiButton.isEnabled = true
-                aiButton.text = "AI 生成菜谱"
-                Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
-            }
-        )
     }
 
 }

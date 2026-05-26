@@ -87,27 +87,6 @@
             android:textColorHint="@color/text_hint"
             android:layout_marginBottom="12dp" />
 
-        <!-- AI 生成按钮 -->
-        <Button
-            android:id="@+id/btn_ai_generate"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="AI 生成菜谱"
-            android:textSize="15sp"
-            android:textColor="@color/white"
-            android:background="@drawable/bg_button_ai"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:id="@+id/ai_status_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="12sp"
-            android:textColor="@color/text_hint"
-            android:layout_marginBottom="12dp" />
-
         <!-- 图片选择 -->
         <TextView
             android:id="@+id/recipe_select_image"
