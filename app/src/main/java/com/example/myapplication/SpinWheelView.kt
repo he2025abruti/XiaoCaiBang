@@ -102,25 +102,6 @@ class SpinWheelView @JvmOverloads constructor(
 
             canvas.drawArc(ovalRect, startAngle, sweepAngle, true, borderPaint)
 
-            // Draw text
-            canvas.save()
-            canvas.rotate(startAngle + sweepAngle / 2, centerX, centerY)
-
-            val textRadius = radius * 0.65f
-            val textX = centerX
-            val textY = centerY - textRadius
-
-            // Truncate long names
-            val displayName = if (items[i].length > 5) {
-                items[i].substring(0, 5) + ".."
-            } else {
-                items[i]
-            }
-
-            textPaint.textSize = radius * 0.08f
-            canvas.drawText(displayName, textX, textY, textPaint)
-
-            canvas.restore()
         }
 
         canvas.restore()
