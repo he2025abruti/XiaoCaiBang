@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_card"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
     android:elevation="3dp"
-    android:padding="12dp">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginEnd="12dp">
+            android:layout_marginEnd="14dp">
 
             <TextView
                 android:id="@+id/recipe_name"
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="6dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:id="@+id/recipe_status"
@@ -44,10 +44,10 @@
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
                     android:textColor="@android:color/white"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     android:background="@drawable/bg_tag_selected" />
 
                 <TextView
@@ -55,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
-                    android:textColor="?android:attr/textColorSecondary"
+                    android:textColor="@color/text_hint"
                     android:layout_marginStart="8dp" />
 
             </LinearLayout>
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
                 android:textColor="@color/recipe_desc_color"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 android:maxLines="2"
                 android:ellipsize="end" />
 
@@ -91,11 +91,12 @@
         android:text="+ 收藏"
         android:textSize="12sp"
         android:textColor="@color/favorite_btn_color"
+        android:textStyle="bold"
         android:layout_gravity="end"
-        android:layout_marginTop="4dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp" />
+        android:layout_marginTop="6dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp" />
 
 </LinearLayout>
