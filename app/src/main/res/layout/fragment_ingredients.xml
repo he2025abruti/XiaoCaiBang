@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/primary_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,15 +14,16 @@
             android:id="@+id/calendar_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3" />
+            android:layout_weight="3"
+            android:layout_margin="12dp" />
 
         <TextView
             android:id="@+id/ingredient_brief"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:padding="12dp"
             android:textSize="13sp"
-            android:textColor="?android:attr/textColorSecondary"
+            android:textColor="@color/text_body"
             android:singleLine="true"
             android:ellipsize="end"
             android:background="?android:attr/selectableItemBackground"
@@ -30,7 +32,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
+            android:background="@drawable/bg_divider" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -41,8 +43,10 @@
                 android:id="@+id/ingredient_detail_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:divider="?android:attr/listDivider"
-                android:dividerHeight="1dp" />
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:padding="8dp"
+                android:clipToPadding="false" />
 
             <TextView
                 android:id="@+id/empty_text"
@@ -51,7 +55,7 @@
                 android:gravity="center"
                 android:text="暂无食材"
                 android:textSize="16sp"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:textColor="@color/text_hint" />
 
         </FrameLayout>
 
@@ -62,9 +66,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="20dp"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@android:color/holo_blue_light"
-        app:elevation="8dp" />
+        app:backgroundTint="@color/primary_color"
+        app:elevation="8dp"
+        app:pressedTranslationZ="12dp" />
 
 </FrameLayout>

@@ -2,32 +2,42 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/primary_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- 搜索栏 -->
         <EditText
             android:id="@+id/search_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="搜索蔬菜水果"
-            android:padding="16dp"
-            android:background="@android:drawable/edit_text"
-            android:layout_margin="16dp" />
+            android:padding="14dp"
+            android:background="@drawable/bg_search"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="12dp"
+            android:textSize="14sp"
+            android:textColorHint="@color/text_hint" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:layout_marginTop="4dp">
 
             <ListView
                 android:id="@+id/vegetable_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginRight="40dp" />
+                android:layout_marginRight="40dp"
+                android:padding="8dp"
+                android:clipToPadding="false"
+                android:dividerHeight="0dp" />
 
             <LinearLayout
                 android:id="@+id/alphabet_scroll"
@@ -36,164 +46,35 @@
                 android:layout_alignParentRight="true"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
-                android:background="@android:color/darker_gray">
+                android:background="@color/primary_light"
+                android:alpha="0.7">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="A"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="B"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="C"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="D"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="E"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="F"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="G"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="H"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="I"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="J"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="K"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="L"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="M"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="N"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="O"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="P"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Q"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="R"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="S"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="T"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="U"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="V"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="W"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="X"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Y"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Z"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="A" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="B" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="C" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="D" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="E" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="F" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="G" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="H" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="I" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="J" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="K" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="L" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="M" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="N" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="O" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Q" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="R" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="T" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="U" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="V" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="W" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="X" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Y" android:textColor="@android:color/white" android:textSize="11sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Z" android:textColor="@android:color/white" android:textSize="11sp" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -208,6 +89,9 @@
         android:layout_margin="20dp"
         android:src="@android:drawable/ic_menu_camera"
         android:contentDescription="食材识别"
+        app:backgroundTint="@color/primary_color"
+        app:elevation="8dp"
+        app:pressedTranslationZ="12dp"
         app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

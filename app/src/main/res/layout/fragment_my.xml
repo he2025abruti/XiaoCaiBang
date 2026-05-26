@@ -2,21 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/primary_bg">
 
+    <!-- 顶栏：渐变背景 -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@android:color/holo_blue_light">
+        android:background="@color/primary_color">
 
         <ImageView
             android:id="@+id/avatar"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:src="@android:drawable/ic_menu_myplaces"
-            android:background="@android:drawable/ic_menu_crop" />
+            android:background="@drawable/bg_avatar_border"
+            android:padding="4dp" />
 
         <TextView
             android:id="@+id/username"
@@ -27,7 +30,8 @@
             android:layout_marginTop="16dp"
             android:text="用户名"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 
@@ -35,6 +39,9 @@
         android:id="@+id/settings_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:padding="12dp"
+        android:clipToPadding="false"
+        android:dividerHeight="0dp" />
 
 </LinearLayout>

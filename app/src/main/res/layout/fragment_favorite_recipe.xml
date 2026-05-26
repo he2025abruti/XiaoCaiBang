@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/primary_bg">
 
     <!-- 顶栏 -->
     <LinearLayout
@@ -10,8 +11,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="12dp"
-        android:background="?android:attr/colorBackground">
+        android:padding="16dp"
+        android:background="@color/primary_bg">
 
         <TextView
             android:id="@+id/back_btn"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:text="&lt; 返回"
             android:textSize="14sp"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/primary_color"
             android:padding="8dp" />
 
         <TextView
@@ -28,7 +29,7 @@
             android:layout_weight="1"
             android:text="我的收藏"
             android:textSize="18sp"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/text_title"
             android:textStyle="bold"
             android:gravity="center" />
 
@@ -41,7 +42,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
+        android:background="@drawable/bg_divider" />
 
     <!-- 收藏列表 -->
     <ListView
@@ -63,7 +64,7 @@
         android:gravity="center"
         android:text="暂无收藏\n在菜谱页点击「收藏」按钮即可添加"
         android:textSize="15sp"
-        android:textColor="?android:attr/textColorSecondary"
+        android:textColor="@color/text_hint"
         android:visibility="gone" />
 
 </LinearLayout>

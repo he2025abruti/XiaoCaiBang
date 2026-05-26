@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:attr/colorBackground">
+    android:background="@color/primary_bg">
 
     <!-- 顶栏 -->
     <LinearLayout
@@ -11,8 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="12dp"
-        android:background="?android:attr/colorBackground">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/back_btn"
@@ -20,7 +19,7 @@
             android:layout_height="wrap_content"
             android:text="&lt; 返回"
             android:textSize="14sp"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/primary_color"
             android:padding="8dp" />
 
         <TextView
@@ -29,7 +28,7 @@
             android:layout_weight="1"
             android:text="猜猜今天吃什么"
             android:textSize="18sp"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/text_title"
             android:textStyle="bold"
             android:gravity="center" />
 
@@ -42,7 +41,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
+        android:background="@drawable/bg_divider" />
 
     <!-- 转盘区域 -->
     <FrameLayout
@@ -66,7 +65,7 @@
         android:layout_height="wrap_content"
         android:text="点击转盘开始，再点击停止"
         android:textSize="14sp"
-        android:textColor="?android:attr/textColorSecondary"
+        android:textColor="@color/text_hint"
         android:gravity="center"
         android:padding="16dp" />
 
