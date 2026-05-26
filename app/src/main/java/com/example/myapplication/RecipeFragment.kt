@@ -310,7 +310,7 @@ class RecipeFragment : Fragment() {
                 recipe.category,
                 recipe.steps,
                 recipe.mainIngredients,
-                recipe.imageUrl,
+                "",
                 recipe.description
             )
             allRecipes.add(0, recipe)

@@ -16,7 +16,7 @@ data class LocalFoodItem(
     val tips: String,
     val shelfLifeDays: Int,
     val pinyinLetter: String,
-    val imageUrl: String = ""
+    val imageRes: Int = 0
 )
 
 object LocalFoodData {
@@ -125,7 +125,7 @@ object LocalFoodData {
         return FOOD_LIST.map { item ->
             FoodItem(
                 name = item.name,
-                imageUrl = item.imageUrl,
+                imageRes = item.imageRes,
                 price = item.price,
                 season = item.season,
                 tips = item.tips,

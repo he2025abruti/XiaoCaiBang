@@ -15,7 +15,7 @@ import java.net.URL
 data class FoodItem(
     val id: Int = 0,
     val name: String,
-    val imageUrl: String = "",
+    val imageRes: Int = 0,
     val price: String = "",
     val season: String = "全年",
     val tips: String = "选择外观新鲜，无损伤的",

@@ -114,9 +114,9 @@ class BuyFragment : Fragment() {
             nameView.text = item.name
             letterView.text = item.pinyinLetter
 
-            // 图片：有URL则加载，否则显示默认图标
-            if (item.imageUrl.isNotEmpty()) {
-                ImageLoader().loadImage(item.imageUrl, imageView, circular = true)
+            // 图片：有资源则显示，否则显示默认图标
+            if (item.imageRes != 0) {
+                imageView.setImageResource(item.imageRes)
             } else {
                 imageView.setImageResource(android.R.drawable.ic_menu_gallery)
             }
@@ -143,9 +143,9 @@ class BuyFragment : Fragment() {
         tipsTextView.text = "挑选技巧: ${item.tips}"
         storageTextView.text = "保鲜时间: ${item.shelfLifeDays}天"
 
-        // 图片：有URL则加载，否则显示默认图标
-        if (item.imageUrl.isNotEmpty()) {
-            ImageLoader().loadImage(item.imageUrl, imageView, circular = false)
+        // 图片：有资源则显示，否则显示默认图标
+        if (item.imageRes != 0) {
+            imageView.setImageResource(item.imageRes)
         } else {
             imageView.setImageResource(android.R.drawable.ic_menu_gallery)
         }

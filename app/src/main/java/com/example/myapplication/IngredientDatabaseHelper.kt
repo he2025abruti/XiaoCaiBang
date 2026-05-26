@@ -218,7 +218,6 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
                     seasonings = "",
                     cookTime = 30,
                     isCustom = true,
-                    imageUrl = imageUrl,
                     description = description
                 ))
             } while (cursor.moveToNext())
@@ -245,7 +244,7 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
         values.put(COLUMN_FAV_INGREDIENTS, recipe.mainIngredients)
         values.put(COLUMN_FAV_SIDE_INGREDIENTS, recipe.sideIngredients)
         values.put(COLUMN_FAV_SEASONINGS, recipe.seasonings)
-        values.put(COLUMN_FAV_IMAGE_URL, recipe.imageUrl)
+        values.put(COLUMN_FAV_IMAGE_URL, "")
         values.put(COLUMN_FAV_DESCRIPTION, recipe.description)
         values.put(COLUMN_FAV_COOK_TIME, recipe.cookTime)
         db.insertWithOnConflict(TABLE_FAVORITES, null, values, SQLiteDatabase.CONFLICT_REPLACE)
@@ -281,7 +280,6 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
                     sideIngredients = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_SIDE_INGREDIENTS)) ?: "",
                     seasonings = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_SEASONINGS)) ?: "",
                     cookTime = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FAV_COOK_TIME)),
-                    imageUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_IMAGE_URL)) ?: "",
                     description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FAV_DESCRIPTION)) ?: ""
                 ))
             } while (cursor.moveToNext())

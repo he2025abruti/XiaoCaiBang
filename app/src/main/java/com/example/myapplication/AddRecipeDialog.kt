@@ -87,7 +87,6 @@ class AddRecipeDialog(
                 seasonings = "",
                 cookTime = 30,
                 isCustom = true,
-                imageUrl = "",
                 description = desc
             )
 

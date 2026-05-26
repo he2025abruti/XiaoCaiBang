@@ -81,8 +81,8 @@ class RecipeAdapter(
         }
         descView.text = desc
 
-        if (recipe.imageUrl.isNotEmpty()) {
-            ImageLoader().loadImage(recipe.imageUrl, imageView, circular = false)
+        if (recipe.imageRes != 0) {
+            imageView.setImageResource(recipe.imageRes)
         } else {
             imageView.setImageResource(android.R.drawable.ic_menu_gallery)
         }

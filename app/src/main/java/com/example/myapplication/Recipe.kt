@@ -14,7 +14,7 @@ data class Recipe(
     val seasonings: String,
     val cookTime: Int,
     val isCustom: Boolean = false,
-    val imageUrl: String = "",
+    val imageRes: Int = 0,
     val description: String = ""
 ) {
     fun getAllIngredientNames(): Set<String> {
