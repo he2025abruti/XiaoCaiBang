@@ -1,13 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="recipe_name_color">#DEFFFFFF</color>
-    <color name="recipe_desc_color">#99FFFFFF</color>
-    <color name="expired_text_color">#FF888888</color>
-    <color name="tag_unselected_text">#FFBBBBBB</color>
-    <color name="favorite_btn_color">#FFBBBBBB</color>
-    <color name="card_bg_color">#FF2C2C2C</color>
-    <color name="tag_unselected_bg">#FF3C3C3C</color>
-    <color name="tag_unselected_stroke">#FF555555</color>
-    <color name="ingredient_name_color">#DEFFFFFF</color>
-    <color name="ingredient_quantity_color">#99FFFFFF</color>
+    <!-- 基础色 -->
+    <color name="black">#FFFFFFFF</color>
+    <color name="white">#FF1A1B26</color>
+
+    <!-- 主色体系 -->
+    <color name="primary_color">#B4A2FF</color>
+    <color name="primary_light">#8C7DF7</color>
+    <color name="primary_dark">#9C8EFF</color>
+    <color name="primary_bg">#1A1B26</color>
+
+    <!-- 文字色 -->
+    <color name="text_title">#FFF3F4F6</color>
+    <color name="text_body">#FFD1D5DB</color>
+    <color name="text_hint">#FF9CA3AF</color>
+
+    <!-- 卡片/背景 -->
+    <color name="card_bg_color">#FF25263B</color>
+    <color name="card_shadow">#33B4A2FF</color>
+
+    <!-- 菜谱相关（代码引用） -->
+    <color name="recipe_name_color">#DEF3F4F6</color>
+    <color name="recipe_desc_color">#99D1D5DB</color>
+    <color name="favorite_btn_color">#FFB4A2FF</color>
+
+    <!-- 食材相关（代码引用） -->
+    <color name="ingredient_name_color">#DEF3F4F6</color>
+    <color name="ingredient_quantity_color">#99D1D5DB</color>
+    <color name="expired_text_color">#FF9CA3AF</color>
+
+    <!-- 标签（代码引用） -->
+    <color name="tag_unselected_text">#FFD1D5DB</color>
+    <color name="tag_unselected_bg">#FF333456</color>
+    <color name="tag_unselected_stroke">#FF4A4B6D</color>
+
+    <!-- 功能色 -->
+    <color name="status_green">#FF55EFC4</color>
+    <color name="status_orange">#FFFDCB6E</color>
+    <color name="divider_color">#1AB4A2FF</color>
+
+    <!-- 启动页 -->
+    <color name="splash_bg">#FF1A1B26</color>
+    <color name="splash_text">#B4A2FF</color>
+
+    <!-- 弹窗 -->
+    <color name="dialog_title">#FFF3F4F6</color>
+
+    <!-- 搜索框 -->
+    <color name="search_bg">#FF333456</color>
+    <color name="search_stroke">#FF4A4B6D</color>
+
+    <!-- Switch -->
+    <color name="switch_track_on">#8C7DF7</color>
+    <color name="switch_track_off">#FF4A4B6D</color>
+
+    <!-- 底部导航 -->
+    <color name="nav_selected">#B4A2FF</color>
+    <color name="nav_unselected">#FF6B7280</color>
+
+    <!-- 导航栏背景 -->
+    <color name="nav_bg">#FF25263B</color>
+
+    <!-- 头像边框 -->
+    <color name="avatar_stroke">#FFB4A2FF</color>
 </resources>
