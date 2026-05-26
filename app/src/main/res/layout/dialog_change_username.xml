@@ -3,12 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@drawable/bg_dialog"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="修改用户名"
+        android:textSize="18sp"
+        android:textColor="@color/dialog_title"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
 
     <EditText
         android:id="@+id/username_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="请输入新用户名" />
+        android:hint="请输入新用户名"
+        android:background="@drawable/bg_input"
+        android:padding="14dp"
+        android:textColorHint="@color/text_hint" />
 
 </LinearLayout>

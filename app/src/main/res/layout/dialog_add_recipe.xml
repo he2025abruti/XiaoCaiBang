@@ -7,7 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:background="@drawable/bg_dialog"
+        android:padding="24dp">
 
         <!-- 菜名 -->
         <EditText
@@ -15,6 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="菜名 *"
+            android:background="@drawable/bg_input"
+            android:padding="14dp"
+            android:textColorHint="@color/text_hint"
             android:layout_marginBottom="12dp" />
 
         <!-- 简介 -->
@@ -23,6 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="简介/备注（选填）"
+            android:background="@drawable/bg_input"
+            android:padding="14dp"
+            android:textColorHint="@color/text_hint"
             android:layout_marginBottom="12dp" />
 
         <!-- 食材清单 -->
@@ -31,7 +38,7 @@
             android:layout_height="wrap_content"
             android:text="食材清单 *（用逗号分隔）"
             android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/text_body"
             android:layout_marginBottom="4dp" />
 
         <EditText
@@ -39,6 +46,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="如：猪肉, 青椒, 蒜, 生姜"
+            android:background="@drawable/bg_input"
+            android:padding="14dp"
+            android:textColorHint="@color/text_hint"
             android:layout_marginBottom="12dp" />
 
         <!-- 分类 -->
@@ -47,7 +57,7 @@
             android:layout_height="wrap_content"
             android:text="分类 *"
             android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/text_body"
             android:layout_marginBottom="4dp" />
 
         <Spinner
@@ -62,7 +72,7 @@
             android:layout_height="wrap_content"
             android:text="详细做法 *"
             android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/text_body"
             android:layout_marginBottom="4dp" />
 
         <EditText
@@ -72,6 +82,9 @@
             android:hint="请输入详细做法步骤"
             android:minLines="4"
             android:gravity="top"
+            android:background="@drawable/bg_input"
+            android:padding="14dp"
+            android:textColorHint="@color/text_hint"
             android:layout_marginBottom="12dp" />
 
         <!-- 图片选择 -->
@@ -81,7 +94,7 @@
             android:layout_height="wrap_content"
             android:text="+ 选择图片（选填）"
             android:textSize="14sp"
-            android:textColor="#FF666666"
+            android:textColor="@color/primary_color"
             android:padding="8dp" />
 
         <ImageView

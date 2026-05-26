@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@drawable/bg_dialog"
+    android:padding="24dp">
 
     <ImageView
         android:id="@+id/vegetable_image"
@@ -12,38 +13,48 @@
         android:layout_gravity="center_horizontal"
         android:scaleType="centerCrop"
         android:src="@android:drawable/ic_menu_gallery"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="16dp" />
 
     <TextView
         android:id="@+id/vegetable_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="@color/primary_color"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp" />
 
     <TextView
         android:id="@+id/vegetable_season"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/text_body"
         android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/vegetable_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/text_body"
         android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/vegetable_tips"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/text_body"
         android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/vegetable_storage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/text_body"
         android:layout_marginBottom="16dp" />
 
 </LinearLayout>
