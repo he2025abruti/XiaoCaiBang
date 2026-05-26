@@ -44,4 +44,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // TODO: 接入真实 Google AI Edge SDK 时添加依赖
+    // implementation("com.google.mediapipe:tasks-genai:<version>")
 }
