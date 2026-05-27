@@ -193,6 +193,17 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
         db.insert(TABLE_RECIPES, null, values)
     }
 
+    fun updateRecipe(id: Int, name: String, category: String, steps: String, ingredients: String, description: String) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_RECIPE_NAME, name)
+        values.put(COLUMN_RECIPE_CATEGORY, category)
+        values.put(COLUMN_RECIPE_STEPS, steps)
+        values.put(COLUMN_RECIPE_INGREDIENTS, ingredients)
+        values.put(COLUMN_RECIPE_DESCRIPTION, description)
+        db.update(TABLE_RECIPES, values, "$COLUMN_RECIPE_ID = ?", arrayOf(id.toString()))
+    }
+
     fun getAllCustomRecipes(): List<Recipe> {
         val recipes = mutableListOf<Recipe>()
         val db = this.readableDatabase

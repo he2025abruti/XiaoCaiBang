@@ -295,11 +295,55 @@ class RecipeFragment : Fragment() {
         val isFav = favoriteNames.contains(recipe.name)
         val favLabel = if (isFav) "取消收藏" else "收藏"
 
-        AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(requireContext())
             .setTitle(recipe.name)
             .setMessage(sb.toString())
             .setPositiveButton(favLabel) { _, _ -> toggleFavorite(recipe) }
             .setNegativeButton("关闭", null)
+
+        if (recipe.isCustom == 1) {
+            builder.setNeutralButton("编辑") { _, _ -> showEditRecipeDialog(recipe) }
+                .setNegativeButton("删除") { _, _ -> confirmDeleteRecipe(recipe) }
+        }
+
+        builder.show()
+    }
+
+    private fun showEditRecipeDialog(recipe: Recipe) {
+        val dialog = AddRecipeDialog(requireContext(), categories, existingRecipe = recipe) { updated ->
+            dbHelper.updateRecipe(
+                updated.id,
+                updated.name,
+                updated.category,
+                updated.steps,
+                updated.mainIngredients,
+                updated.description
+            )
+            val index = allRecipes.indexOfFirst { it.id == updated.id }
+            if (index >= 0) {
+                allRecipes[index] = updated
+            }
+            categories = buildCategories()
+            rebuildCategoryTags()
+            applyFilter()
+            Toast.makeText(requireContext(), "菜谱「${updated.name}」已更新", Toast.LENGTH_SHORT).show()
+        }
+        dialog.show()
+    }
+
+    private fun confirmDeleteRecipe(recipe: Recipe) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("删除菜谱")
+            .setMessage("确定要删除「${recipe.name}」吗？")
+            .setPositiveButton("删除") { _, _ ->
+                dbHelper.deleteRecipe(recipe.id)
+                allRecipes.removeAll { it.id == recipe.id }
+                categories = buildCategories()
+                rebuildCategoryTags()
+                applyFilter()
+                Toast.makeText(requireContext(), "已删除「${recipe.name}」", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("取消", null)
             .show()
     }
 

@@ -2,7 +2,6 @@ package com.example.myapplication
 
 import android.app.AlertDialog
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
@@ -15,10 +14,9 @@ import android.widget.Toast
 class AddRecipeDialog(
     private val context: Context,
     private val categories: List<String>,
-    private val onRecipeAdded: (Recipe) -> Unit
+    private val existingRecipe: Recipe? = null,
+    private val onRecipeSaved: (Recipe) -> Unit
 ) {
-
-    private var selectedImageUri: Uri? = null
 
     fun show() {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_add_recipe, null)
@@ -41,8 +39,19 @@ class AddRecipeDialog(
         selectImageText.visibility = View.GONE
         imagePreview.visibility = View.GONE
 
+        // 编辑模式：预填数据
+        val isEdit = existingRecipe != null
+        if (isEdit) {
+            nameEdit.setText(existingRecipe!!.name)
+            descEdit.setText(existingRecipe.description)
+            ingredientsEdit.setText(existingRecipe.mainIngredients)
+            stepsEdit.setText(existingRecipe.steps)
+            val catIndex = categoryList.indexOf(existingRecipe.category)
+            if (catIndex >= 0) categorySpinner.setSelection(catIndex)
+        }
+
         val dialog = AlertDialog.Builder(context)
-            .setTitle("添加自定义菜谱")
+            .setTitle(if (isEdit) "编辑菜谱" else "添加自定义菜谱")
             .setView(view)
             .setPositiveButton("保存", null)
             .setNegativeButton("取消", null)
@@ -75,24 +84,33 @@ class AddRecipeDialog(
                 return@setOnClickListener
             }
 
-            val recipe = Recipe(
-                id = System.currentTimeMillis().toInt(),
-                name = name,
-                category = category,
-                gongyi = "",
-                kouwei = "",
-                steps = steps,
-                mainIngredients = ingredientsStr,
-                sideIngredients = "",
-                seasonings = "",
-                cookTime = 30,
-                isCustom = 1,
-                description = desc
-            )
+            val recipe = if (isEdit) {
+                existingRecipe.copy(
+                    name = name,
+                    category = category,
+                    steps = steps,
+                    mainIngredients = ingredientsStr,
+                    description = desc
+                )
+            } else {
+                Recipe(
+                    id = System.currentTimeMillis().toInt(),
+                    name = name,
+                    category = category,
+                    gongyi = "",
+                    kouwei = "",
+                    steps = steps,
+                    mainIngredients = ingredientsStr,
+                    sideIngredients = "",
+                    seasonings = "",
+                    cookTime = 30,
+                    isCustom = 1,
+                    description = desc
+                )
+            }
 
-            onRecipeAdded(recipe)
+            onRecipeSaved(recipe)
             dialog.dismiss()
         }
     }
-
 }
