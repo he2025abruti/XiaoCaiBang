@@ -2,9 +2,12 @@ package com.example.myapplication
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
@@ -18,6 +21,8 @@ class AddRecipeDialog(
     private val onRecipeSaved: (Recipe) -> Unit
 ) {
 
+    private val handler = Handler(Looper.getMainLooper())
+
     fun show() {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_add_recipe, null)
 
@@ -28,6 +33,7 @@ class AddRecipeDialog(
         val stepsEdit = view.findViewById<EditText>(R.id.recipe_steps)
         val selectImageText = view.findViewById<TextView>(R.id.recipe_select_image)
         val imagePreview = view.findViewById<ImageView>(R.id.recipe_image_preview)
+        val btnAiSearch = view.findViewById<Button>(R.id.btn_ai_search)
 
         // 设置分类下拉（去掉"全部"选项）
         val categoryList = categories.filter { it != "全部" }
@@ -48,6 +54,50 @@ class AddRecipeDialog(
             stepsEdit.setText(existingRecipe.steps)
             val catIndex = categoryList.indexOf(existingRecipe.category)
             if (catIndex >= 0) categorySpinner.setSelection(catIndex)
+        }
+
+        // AI 联网搜索按钮
+        btnAiSearch.setOnClickListener {
+            val keyword = nameEdit.text.toString().trim()
+            if (keyword.isEmpty()) {
+                Toast.makeText(context, "请先输入菜名", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            Toast.makeText(context, "正在AI搜索菜谱...", Toast.LENGTH_SHORT).show()
+            btnAiSearch.isEnabled = false
+            btnAiSearch.text = "搜索中..."
+
+            Thread {
+                val result = GlmApiHelper.searchRecipe(keyword)
+
+                handler.post {
+                    btnAiSearch.isEnabled = true
+                    btnAiSearch.text = "AI 联网搜索匹配"
+
+                    if (result != null) {
+                        // 只回填空字段，不覆盖用户已输入内容
+                        if (descEdit.text.isNullOrBlank()) {
+                            descEdit.setText(result.description)
+                        }
+                        if (ingredientsEdit.text.isNullOrBlank()) {
+                            ingredientsEdit.setText(result.mainIngredients)
+                        }
+                        if (stepsEdit.text.isNullOrBlank()) {
+                            stepsEdit.setText(result.steps)
+                        }
+                        // 匹配分类下拉
+                        val catIdx = categoryList.indexOf(result.category)
+                        if (catIdx >= 0) {
+                            categorySpinner.setSelection(catIdx)
+                        }
+                        Toast.makeText(context, "搜索完成，已自动回填", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val errorMsg = GlmApiHelper.lastError ?: "请检查网络连接"
+                        Toast.makeText(context, "搜索失败: $errorMsg", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }.start()
         }
 
         val dialog = AlertDialog.Builder(context)
