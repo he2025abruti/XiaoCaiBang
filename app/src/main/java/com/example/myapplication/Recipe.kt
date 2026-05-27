@@ -13,7 +13,7 @@ data class Recipe(
     val sideIngredients: String,
     val seasonings: String,
     val cookTime: Int,
-    val isCustom: Boolean = false,
+    val isCustom: Int = 0,
     val imageRes: Int = 0,
     val description: String = ""
 ) {

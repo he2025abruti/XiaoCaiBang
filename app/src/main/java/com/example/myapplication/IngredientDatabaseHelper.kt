@@ -217,7 +217,7 @@ class IngredientDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DAT
                     sideIngredients = "",
                     seasonings = "",
                     cookTime = 30,
-                    isCustom = true,
+                    isCustom = 1,
                     description = description
                 ))
             } while (cursor.moveToNext())

@@ -86,7 +86,7 @@ class AddRecipeDialog(
                 sideIngredients = "",
                 seasonings = "",
                 cookTime = 30,
-                isCustom = true,
+                isCustom = 1,
                 description = desc
             )
 
