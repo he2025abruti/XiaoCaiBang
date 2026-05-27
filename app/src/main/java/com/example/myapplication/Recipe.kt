@@ -40,7 +40,8 @@ data class Recipe(
         }
 
         fun fromJson(obj: JSONObject): Recipe {
-            val catObj = obj.optJSONObject("caipu.category_1_x_caipu_id")
+            val catObj = obj.optJSONObject("" +
+                    "caipu.category_1_x_caipu_id")
             var catName = ""
             if (catObj != null && catObj.length() > 0) {
                 val firstKey = catObj.keys().next()
