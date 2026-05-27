@@ -337,7 +337,10 @@ class RecipeFragment : Fragment() {
             .setMessage("确定要删除「${recipe.name}」吗？")
             .setPositiveButton("删除") { _, _ ->
                 dbHelper.deleteRecipe(recipe.id)
+                dbHelper.removeFavorite(recipe.name)
                 allRecipes.removeAll { it.id == recipe.id }
+                favoriteNames = favoriteNames - recipe.name
+                adapter.updateFavorites(favoriteNames)
                 categories = buildCategories()
                 rebuildCategoryTags()
                 applyFilter()
