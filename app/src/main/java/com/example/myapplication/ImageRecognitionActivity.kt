@@ -1,23 +1,24 @@
 package com.example.myapplication
 
+import android.Manifest
 import android.app.AlertDialog
-import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import java.io.ByteArrayOutputStream
+import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -35,11 +36,10 @@ class ImageRecognitionActivity : AppCompatActivity() {
     private lateinit var btnAddIngredient: Button
     private lateinit var manualInputLayout: View
 
-    private val apiHelper = SpoonacularApiHelper()
     private val handler = Handler(Looper.getMainLooper())
 
     private var recognizedFoodName: String? = null
-    private var currentImageBytes: ByteArray? = null
+    private var currentBitmap: Bitmap? = null
 
     // 相册选图
     private val pickImageLauncher = registerForActivityResult(
@@ -60,6 +60,17 @@ class ImageRecognitionActivity : AppCompatActivity() {
 
     private var photoUri: Uri? = null
 
+    // 相机权限请求
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted: Boolean ->
+        if (granted) {
+            launchCamera()
+        } else {
+            Toast.makeText(this, "需要相机权限才能拍照", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_recognition)
@@ -75,20 +86,7 @@ class ImageRecognitionActivity : AppCompatActivity() {
         manualInputLayout = findViewById(R.id.manual_input_layout)
 
         btnCamera.setOnClickListener {
-            try {
-                val photoFile = createImageFile()
-                photoUri = androidx.core.content.FileProvider.getUriForFile(
-                    this, "${packageName}.fileprovider", photoFile
-                )
-                takePictureLauncher.launch(photoUri!!)
-            } catch (e: Exception) {
-                // 如果相机不可用，提示
-                AlertDialog.Builder(this)
-                    .setTitle("提示")
-                    .setMessage("相机不可用，请从相册选择图片")
-                    .setPositiveButton("确定", null)
-                    .show()
-            }
+            checkCameraPermissionAndLaunch()
         }
 
         btnGallery.setOnClickListener {
@@ -109,41 +107,65 @@ class ImageRecognitionActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleImageSelected(uri: Uri) {
-        // 显示图片
-        val bitmap = uriToBitmap(uri)
-        if (bitmap != null) {
-            previewImage.setImageBitmap(bitmap)
-            // 压缩图片用于 API 识别
-            currentImageBytes = compressBitmap(bitmap)
-            // 开始识别
-            startRecognition()
+    private fun checkCameraPermissionAndLaunch() {
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED -> {
+                launchCamera()
+            }
+            else -> {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
         }
     }
 
-    private fun startRecognition() {
-        val imageBytes = currentImageBytes ?: return
+    private fun launchCamera() {
+        try {
+            val photoFile = createImageFile()
+            photoUri = androidx.core.content.FileProvider.getUriForFile(
+                this, "${packageName}.fileprovider", photoFile
+            )
+            takePictureLauncher.launch(photoUri!!)
+        } catch (e: Exception) {
+            AlertDialog.Builder(this)
+                .setTitle("提示")
+                .setMessage("相机不可用，请从相册选择图片")
+                .setPositiveButton("确定", null)
+                .show()
+        }
+    }
 
+    private fun handleImageSelected(uri: Uri) {
+        val bitmap = uriToBitmap(uri)
+        if (bitmap != null) {
+            previewImage.setImageBitmap(bitmap)
+            currentBitmap = bitmap
+            startRecognition(bitmap)
+        }
+    }
+
+    private fun startRecognition(bitmap: Bitmap) {
         recognitionProgress.visibility = View.VISIBLE
         resultText.visibility = View.GONE
         btnAddIngredient.visibility = View.GONE
+        manualInputLayout.visibility = View.GONE
 
         Thread {
-            // 尝试 API 图片识别
-            val uploadResult = apiHelper.classifyImageByUpload(imageBytes)
+            val glResult = GlmImageRecognizer.recognize(bitmap)
 
             handler.post {
                 recognitionProgress.visibility = View.GONE
 
-                if (uploadResult != null) {
-                    // API 识别成功
-                    recognizedFoodName = apiHelper.translateName(uploadResult)
+                if (glResult != null && glResult.isNotBlank()) {
+                    // GLM 识别成功
+                    recognizedFoodName = extractFoodName(glResult)
                     resultText.text = "识别结果: $recognizedFoodName"
                     resultText.visibility = View.VISIBLE
                     btnAddIngredient.visibility = View.VISIBLE
                 } else {
-                    // API 识别失败，提示手动输入
-                    resultText.text = "自动识别失败，请手动输入食材名称"
+                    // 识别失败，显示错误原因并提示手动输入
+                    val errorMsg = GlmImageRecognizer.lastError ?: "请检查网络连接"
+                    resultText.text = "识别失败: $errorMsg\n请手动输入食材名称"
                     resultText.visibility = View.VISIBLE
                     manualInputLayout.visibility = View.VISIBLE
                 }
@@ -151,8 +173,17 @@ class ImageRecognitionActivity : AppCompatActivity() {
         }.start()
     }
 
+    /**
+     * 从 GLM 返回文本中提取食材名称（取第一行或整个文本作为食材名）
+     */
+    private fun extractFoodName(raw: String): String {
+        // 取第一行非空文本作为食材名
+        val firstLine = raw.lines().firstOrNull { it.isNotBlank() } ?: return raw
+        // 去掉可能的序号前缀 "1. " "、" 等
+        return firstLine.replace(Regex("^[\\d.、\\s]+"), "").trim()
+    }
+
     private fun addIngredientByName(name: String) {
-        // 查找保鲜天数
         val shelfDays = LocalFoodData.getAllShelfLifeMap()[name] ?: 7
 
         val dbHelper = IngredientDatabaseHelper(this)
@@ -178,25 +209,6 @@ class ImageRecognitionActivity : AppCompatActivity() {
         } catch (e: Exception) {
             null
         }
-    }
-
-    private fun compressBitmap(bitmap: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        // 限制最大尺寸 800px
-        val maxDim = maxOf(bitmap.width, bitmap.height)
-        val scaled = if (maxDim > 800) {
-            val scale = 800f / maxDim
-            Bitmap.createScaledBitmap(
-                bitmap,
-                (bitmap.width * scale).toInt(),
-                (bitmap.height * scale).toInt(),
-                true
-            )
-        } else {
-            bitmap
-        }
-        scaled.compress(Bitmap.CompressFormat.JPEG, 80, stream)
-        return stream.toByteArray()
     }
 
     private fun createImageFile(): java.io.File {
