@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -83,10 +82,8 @@ class RecipeAdapter(
         descView.text = desc
 
         if (recipe.imageRes != 0) {
-            Log.d("RecipeImage", "name=${recipe.name} imageRes=${recipe.imageRes} -> 正常加载图片")
             imageView.setImageResource(recipe.imageRes)
         } else {
-            Log.d("RecipeImage", "name=${recipe.name} imageRes=0 -> 显示默认图标")
             imageView.setImageResource(android.R.drawable.ic_menu_gallery)
         }
 
