@@ -18,7 +18,7 @@ GlmApiHelper {
     private const val API_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
     private const val MODEL = "glm-4.6v-flash"
     private const val TIMEOUT = 30000
-    private const val API_KEY = "35cf9a2481244ed89271bfe58ee7a297.HNQDC6irnfb8sviy"
+    private const val API_KEY = ""
 
     var lastError: String? = null
         private set
